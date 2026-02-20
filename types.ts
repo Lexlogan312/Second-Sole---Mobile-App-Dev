@@ -1,48 +1,90 @@
+export type ShoeCategory = 'Road' | 'Trail' | 'Track' | 'Hybrid';
+export type SupportType = 'Neutral' | 'Stability';
+export type CushionLevel = 'Firm' | 'Balanced' | 'Plush';
+export type Brand = 'Saucony' | 'Brooks' | 'Hoka' | 'New Balance' | 'Nike' | 'Altra';
+
 export interface Shoe {
   id: string;
   name: string;
-  brand: string;
+  brand: Brand;
   price: number;
-  category: 'Road' | 'Trail' | 'Hybrid';
-  stability: 'Neutral' | 'Stability';
-  cushion: 'Firm' | 'Balanced' | 'Maximal';
-  widthOptions: ('Standard' | 'Wide' | 'Extra Wide')[];
+  category: ShoeCategory;
+  support: SupportType;
+  cushion: CushionLevel;
+  drop: number; // mm
+  weight: number; // oz
   image: string;
+  isStaffPick?: boolean;
   description: string;
-  staffPick?: boolean;
+  staffComparison?: string;
 }
 
-export interface QuizPreferences {
-  terrain: 'Road' | 'Trail' | 'Hybrid' | null;
-  stability: 'Neutral' | 'Stability' | 'Supination' | null; // Mapped from stride question
-  cushion: 'Firm' | 'Balanced' | 'Maximal' | null;
-  mileage: 'Low' | 'Medium' | 'High' | null;
-  width: 'Standard' | 'Wide' | null;
-  brands: string[];
+export interface CartItem {
+  shoeId: string;
+  quantity: number;
+  size: number;
 }
 
-export interface Event {
-  id: string;
-  title: string;
-  day: string;
-  time: string;
-  location: string;
-  type: 'Club Run' | 'Trail Run' | 'Long Run' | 'Speed Work' | 'Social Run';
+export interface GaitProfile {
+  terrain?: string;
+  strike?: string;
+  arch?: string;
+  pronation?: string;
+  distanceGoals?: string;
+  cushionPref?: string;
+  footShape?: string;
+  injuryHistory?: string[];
+}
+
+export interface ShoeRotationItem {
+  id: string; // unique instance id
+  shoeId: string; // reference to inventory id if applicable, or generic
+  name: string;
+  nickname?: string;
+  miles: number;
+  threshold: number;
+  image?: string;
+}
+
+export interface UserProfile {
+  name: string;
+  email: string;
+  isGuest: boolean;
+  attendanceCount: number;
+  milesRun?: number;
+}
+
+export interface PrivacyAudit {
+  lastWipe: string | null;
+  storageUsed: string;
+}
+
+export interface LocalStorageSchema {
+  profile: UserProfile;
+  gaitProfile: GaitProfile;
+  rotation: ShoeRotationItem[];
+  cart: CartItem[];
+  privacyAudit: PrivacyAudit;
+  isAuthenticated: boolean;
 }
 
 export interface Trail {
   id: string;
   name: string;
-  type: 'Paved' | 'Trails' | 'Mixed';
   distance: string;
-  image: string;
+  surface: string;
+  description: string;
+  status: 'Open' | 'Muddy' | 'Closed';
+  highlights: string[];
+  parkingInfo: string;
+  coordinates?: { lat: number; lng: number };
 }
 
-export interface UserProfile {
+export interface Event {
+  id: string;
   name: string;
-  currentShoeName: string;
-  currentShoeImage?: string;
-  currentShoeMileage: number;
-  shoeLimit: number;
-  checkIns: string[];
+  day: string;
+  time: string;
+  description: string;
+  paceGroups: string[];
 }
