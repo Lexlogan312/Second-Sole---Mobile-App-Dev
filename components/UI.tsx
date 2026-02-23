@@ -24,8 +24,8 @@ export const Button: React.FC<ButtonProps> = ({
   const baseStyles = "inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:pointer-events-none rounded-full";
   
   const variants = {
-    primary: "bg-gradient-to-r from-[#A3EBB1] to-[#4A90E2] text-black shadow-[0_0_20px_rgba(74,144,226,0.4)] hover:shadow-[0_0_30px_rgba(74,144,226,0.6)] active:scale-95",
-    secondary: "bg-[#1A1F2C] border border-white/10 text-white hover:bg-[#252b3d] active:scale-95",
+    primary: "bg-gradient-to-r from-[#ffffff] to-[#e43928] text-black shadow-[0_0_20px_rgba(228,57,40,0.4)] hover:shadow-[0_0_30px_rgba(228,57,40,0.6)] active:scale-95",
+    secondary: "bg-[#111111] border border-white/10 text-white hover:bg-[#1a1a1a] active:scale-95",
     danger: "bg-red-500/10 border border-red-500/50 text-red-500 hover:bg-red-500/20",
     ghost: "bg-transparent text-[#A0AEC0] hover:text-white"
   };
@@ -66,7 +66,7 @@ export const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({ c
   return (
     <input 
       className={cn(
-        "w-full bg-[#000000] border border-white/10 rounded-2xl h-14 px-5 text-white placeholder:text-gray-600 focus:outline-none focus:border-[#4A90E2] transition-colors",
+        "w-full bg-[#000000] border border-white/10 rounded-2xl h-14 px-5 text-white placeholder:text-gray-600 focus:outline-none focus:border-[#e43928] transition-colors",
         className
       )}
       {...props}
@@ -74,7 +74,7 @@ export const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({ c
   );
 };
 
-export const Badge: React.FC<{ children: React.ReactNode; color?: string }> = ({ children, color = "bg-[#4A90E2]" }) => {
+export const Badge: React.FC<{ children: React.ReactNode; color?: string }> = ({ children, color = "bg-[#e43928]" }) => {
   return (
     <span className={cn("px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-black inline-block", color)}>
       {children}

@@ -39,7 +39,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         {!profile.isGuest && (
             <div className="text-right">
             <div className="text-xs text-[#A0AEC0] uppercase tracking-wider mb-1">Total Miles</div>
-            <div className="text-[#A3EBB1] font-mono font-bold text-xl">{totalMiles} mi</div>
+            <div className="text-[#e43928] font-mono font-bold text-xl">{totalMiles} mi</div>
             </div>
         )}
       </div>
@@ -76,17 +76,17 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
       <div className="grid grid-cols-2 gap-4">
         <div 
             onClick={() => onNavigate('finder')}
-            className="bg-gradient-to-br from-[#1A1F2C] to-[#252b3d] p-5 rounded-[24px] border border-white/5 cursor-pointer hover:border-[#4A90E2]/50 transition-colors group"
+            className="bg-gradient-to-br from-[#111111] to-[#1a1a1a] p-5 rounded-[24px] border border-white/5 cursor-pointer hover:border-[#e43928]/50 transition-colors group"
         >
-            <Zap className="text-[#4A90E2] mb-3 group-hover:scale-110 transition-transform" />
+            <Zap className="text-[#e43928] mb-3 group-hover:scale-110 transition-transform" />
             <h3 className="font-bold text-lg leading-tight mb-1">Gait<br/>Analysis</h3>
             <p className="text-xs text-[#A0AEC0]">AI-Powered Quiz</p>
         </div>
         <div 
             onClick={() => onNavigate('shop')}
-            className="bg-gradient-to-br from-[#1A1F2C] to-[#252b3d] p-5 rounded-[24px] border border-white/5 cursor-pointer hover:border-[#A3EBB1]/50 transition-colors group"
+            className="bg-gradient-to-br from-[#111111] to-[#1a1a1a] p-5 rounded-[24px] border border-white/5 cursor-pointer hover:border-white/50 transition-colors group"
         >
-            <div className="text-[#A3EBB1] mb-3 group-hover:scale-110 transition-transform font-bold text-xl">%</div>
+            <div className="text-white mb-3 group-hover:scale-110 transition-transform font-bold text-xl">%</div>
             <h3 className="font-bold text-lg leading-tight mb-1">Current<br/>Stock</h3>
             <p className="text-xs text-[#A0AEC0]">View Inventory</p>
         </div>
@@ -109,7 +109,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                              <h4 className="font-bold text-white">{event.name}</h4>
-                             {event.name === 'Sole Train' && <Badge color="bg-[#A3EBB1]">Popular</Badge>}
+                             {event.name === 'Sole Train' && <Badge color="bg-[#e43928]">Popular</Badge>}
                         </div>
                         <p className="text-xs text-[#A0AEC0] leading-relaxed line-clamp-2">{event.description}</p>
                     </div>

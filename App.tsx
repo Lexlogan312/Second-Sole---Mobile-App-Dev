@@ -71,7 +71,7 @@ export default function App() {
     <>
         {/* Floating Cart Button 
             - Moved OUTSIDE Layout to prevent it from participating in page transitions (fixes "jumping")
-            - Updated Badge color to #A3EBB1 (Theme Green) to match accents
+            - Updated Badge color to #ffffff (White) to match accents
         */}
         <div 
             className={`fixed bottom-32 right-5 z-40 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
@@ -82,12 +82,12 @@ export default function App() {
         >
            <button 
              onClick={() => setActiveTab('cart')}
-             className="w-14 h-14 bg-[#4A90E2] rounded-full flex items-center justify-center text-black shadow-[0_4px_20px_rgba(74,144,226,0.4)] active:scale-95 transition-transform relative group"
+             className="w-14 h-14 bg-[#e43928] rounded-full flex items-center justify-center text-white shadow-[0_4px_20px_rgba(228,57,40,0.4)] active:scale-95 transition-transform relative group"
            >
              <ShoppingBag size={24} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
              
              {cartCount > 0 && (
-                 <div className="absolute -top-1 -right-1 min-w-[20px] h-5 bg-[#A3EBB1] rounded-full text-black text-[10px] font-bold flex items-center justify-center px-1 border border-black shadow-sm">
+                 <div className="absolute -top-1 -right-1 min-w-[20px] h-5 bg-[#ffffff] rounded-full text-black text-[10px] font-bold flex items-center justify-center px-1 border border-black shadow-sm">
                      {cartCount}
                  </div>
              )}

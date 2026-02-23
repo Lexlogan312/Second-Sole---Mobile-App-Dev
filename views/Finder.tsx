@@ -136,9 +136,9 @@ export const Finder: React.FC<FinderProps> = ({ onComplete }) => {
     <div className="h-full flex flex-col overflow-x-hidden">
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-6">
-             <div className="h-1 flex-1 bg-[#1A1F2C] rounded-full overflow-hidden">
+             <div className="h-1 flex-1 bg-[#111111] rounded-full overflow-hidden">
                 <div 
-                    className="h-full bg-gradient-to-r from-[#A3EBB1] to-[#4A90E2] transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-[#ffffff] to-[#e43928] transition-all duration-300"
                     style={{ width: `${((currentStep + 1) / STEPS.length) * 100}%` }}
                 />
              </div>
@@ -163,14 +163,14 @@ export const Finder: React.FC<FinderProps> = ({ onComplete }) => {
                     <Card 
                         key={opt.value}
                         onClick={() => handleSelect(opt.value, !!stepData.multi)}
-                        className={`transition-all duration-200 ${isSelected ? 'border-[#4A90E2] ring-1 ring-[#4A90E2] bg-[#252b3d]' : 'border-transparent opacity-80 hover:opacity-100'}`}
+                        className={`transition-all duration-200 ${isSelected ? 'border-[#e43928] ring-1 ring-[#e43928] bg-[#111111]' : 'border-transparent opacity-80 hover:opacity-100'}`}
                     >
                         <div className="flex items-center justify-between">
                             <div>
                                 <div className="font-bold text-lg mb-1">{opt.label}</div>
                                 <div className="text-xs text-[#A0AEC0]">{opt.desc}</div>
                             </div>
-                            {isSelected && <div className="bg-[#4A90E2] rounded-full p-1"><Check size={14} className="text-black" /></div>}
+                            {isSelected && <div className="bg-[#e43928] rounded-full p-1"><Check size={14} className="text-white" /></div>}
                         </div>
                     </Card>
                 );

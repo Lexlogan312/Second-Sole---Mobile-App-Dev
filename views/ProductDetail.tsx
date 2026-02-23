@@ -25,13 +25,13 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ shoe, onClose }) =
     <div className="fixed inset-0 z-[5000] flex items-end sm:items-center justify-center pointer-events-auto">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="bg-[#1A1F2C] w-full max-w-md h-[90vh] sm:h-auto sm:max-h-[90vh] sm:rounded-[32px] rounded-t-[32px] relative z-10 flex flex-col overflow-hidden border border-white/10 animate-in slide-in-from-bottom duration-300">
+      <div className="bg-[#111111] w-full max-w-md h-[90vh] sm:h-auto sm:max-h-[90vh] sm:rounded-[32px] rounded-t-[32px] relative z-10 flex flex-col overflow-hidden border border-white/10 animate-in slide-in-from-bottom duration-300">
         <div className="h-64 relative bg-[#000] flex-shrink-0">
-             <img src={shoe.image} alt={shoe.name} className="w-full h-full object-cover opacity-90" />
+             <img src={shoe.image} alt={shoe.name} referrerPolicy="no-referrer" className="w-full h-full object-contain p-4 opacity-90" />
              <button onClick={onClose} className="absolute top-4 right-4 bg-black/50 p-2 rounded-full text-white backdrop-blur-md z-10 hover:bg-black/70">
                  <X size={20} />
              </button>
-             <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#1A1F2C] to-transparent" />
+             <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#111111] to-transparent" />
         </div>
 
         <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
@@ -40,7 +40,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ shoe, onClose }) =
                     <div className="text-[#A0AEC0] text-sm font-medium mb-1">{shoe.brand}</div>
                     <h2 className="text-2xl font-bold text-white">{shoe.name}</h2>
                 </div>
-                <div className="text-xl font-bold text-[#A3EBB1]">${shoe.price}</div>
+                <div className="text-xl font-bold text-[#e43928]">${shoe.price}</div>
             </div>
 
             <div className="flex flex-wrap gap-2 mb-6">
@@ -52,8 +52,8 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ shoe, onClose }) =
             <p className="text-[#A0AEC0] leading-relaxed mb-6">{shoe.description}</p>
             
             {shoe.staffComparison && (
-                <div className="bg-[#4A90E2]/10 border-l-2 border-[#4A90E2] p-4 rounded-r-xl mb-6">
-                    <div className="flex items-center gap-2 text-[#4A90E2] font-bold text-xs uppercase mb-1">
+                <div className="bg-[#e43928]/10 border-l-2 border-[#e43928] p-4 rounded-r-xl mb-6">
+                    <div className="flex items-center gap-2 text-[#e43928] font-bold text-xs uppercase mb-1">
                         <User size={12} /> Staff Take
                     </div>
                     <p className="text-sm italic text-white/90">"{shoe.staffComparison}"</p>
@@ -78,7 +78,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ shoe, onClose }) =
                         <button
                             key={size}
                             onClick={() => setSelectedSize(size)}
-                            className={`h-10 rounded-lg text-sm font-medium transition-all ${selectedSize === size ? 'bg-[#4A90E2] text-black shadow-[0_0_15px_rgba(74,144,226,0.4)]' : 'bg-black/40 text-white hover:bg-white/10'}`}
+                            className={`h-10 rounded-lg text-sm font-medium transition-all ${selectedSize === size ? 'bg-[#e43928] text-white shadow-[0_0_15px_rgba(228,57,40,0.4)]' : 'bg-black/40 text-white hover:bg-white/10'}`}
                         >
                             {size}
                         </button>
@@ -87,7 +87,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ shoe, onClose }) =
             </div>
         </div>
 
-        <div className="p-6 border-t border-white/5 bg-[#1A1F2C] safe-area-bottom">
+        <div className="p-6 border-t border-white/5 bg-[#111111] safe-area-bottom">
             <Button fullWidth size="lg" disabled={!selectedSize} onClick={handleAddToCart}>
                 Add to Bag
                 <ShoppingBag size={18} className="ml-2" />

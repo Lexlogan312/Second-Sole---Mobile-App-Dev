@@ -55,7 +55,7 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
   if (!isSetup) {
     return (
       <div className="min-h-screen bg-[#000000] flex flex-col items-center justify-center p-6 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-[#1A1F2C] to-transparent opacity-50 -z-10" />
+        <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-[#111111] to-transparent opacity-50 -z-10" />
         
         <div className="w-full max-w-sm">
           <h1 className="text-4xl font-bold text-white mb-2">Second Sole<br/><span className="gradient-text">Medina</span></h1>
@@ -97,11 +97,11 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
   return (
     <div className="min-h-screen bg-[#000000] flex flex-col items-center justify-center p-6 text-center">
       <div className="mb-12 relative">
-        <div className={`w-32 h-32 rounded-full border-2 flex items-center justify-center transition-all duration-700 ${isScanning ? 'border-[#4A90E2] shadow-[0_0_50px_rgba(74,144,226,0.5)]' : 'border-[#1A1F2C]'}`}>
-           <ScanFace size={48} className={isScanning ? 'text-[#4A90E2] animate-pulse' : 'text-white'} />
+        <div className={`w-32 h-32 rounded-full border-2 flex items-center justify-center transition-all duration-700 ${isScanning ? 'border-[#e43928] shadow-[0_0_50px_rgba(228,57,40,0.5)]' : 'border-[#111111]'}`}>
+           <ScanFace size={48} className={isScanning ? 'text-[#e43928] animate-pulse' : 'text-white'} />
         </div>
         {isScanning && (
-            <div className="absolute inset-0 rounded-full border-t-2 border-[#A3EBB1] animate-spin" />
+            <div className="absolute inset-0 rounded-full border-t-2 border-white animate-spin" />
         )}
       </div>
 

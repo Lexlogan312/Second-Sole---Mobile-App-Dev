@@ -71,7 +71,7 @@ export const Shop: React.FC<ShopProps> = ({ onProductClick, filteredMode = false
   const FilterDrawer = (
       <div className="fixed inset-0 z-[5000] flex justify-end pointer-events-auto">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowFilters(false)} />
-          <div className="bg-[#1A1F2C] w-80 h-full relative z-10 p-6 flex flex-col border-l border-white/10 animate-in slide-in-from-right duration-300">
+          <div className="bg-[#111111] w-80 h-full relative z-10 p-6 flex flex-col border-l border-white/10 animate-in slide-in-from-right duration-300">
               <div className="flex justify-between items-center mb-8">
                   <h2 className="text-xl font-bold text-white">Filters</h2>
                   <button onClick={() => setShowFilters(false)}><X className="text-[#A0AEC0]" /></button>
@@ -83,7 +83,7 @@ export const Shop: React.FC<ShopProps> = ({ onProductClick, filteredMode = false
                       <div className="space-y-2">
                           {['Saucony', 'Brooks', 'Hoka', 'New Balance', 'Altra'].map(brand => (
                               <label key={brand} className="flex items-center gap-3 text-white cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors">
-                                  <div className={`w-5 h-5 rounded border flex items-center justify-center ${activeFilters.brands.includes(brand) ? 'bg-[#4A90E2] border-[#4A90E2]' : 'border-white/20'}`}>
+                                  <div className={`w-5 h-5 rounded border flex items-center justify-center ${activeFilters.brands.includes(brand) ? 'bg-[#e43928] border-[#e43928]' : 'border-white/20'}`}>
                                       {activeFilters.brands.includes(brand) && <Plus size={12} className="text-black rotate-45" />}
                                   </div>
                                   <input 
@@ -112,7 +112,7 @@ export const Shop: React.FC<ShopProps> = ({ onProductClick, filteredMode = false
          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar flex-1 mr-2">
             {!profile.isGuest && <button
                  onClick={() => setActiveFilters(prev => ({ ...prev, category: 'Match' }))}
-                 className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${activeFilters.category === 'Match' ? 'bg-gradient-to-r from-[#A3EBB1] to-[#4A90E2] text-black' : 'bg-[#1A1F2C] text-[#A0AEC0]'}`}
+                 className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${activeFilters.category === 'Match' ? 'bg-gradient-to-r from-[#ffffff] to-[#e43928] text-black' : 'bg-[#111111] text-[#A0AEC0]'}`}
             >
                 My Matches
             </button>}
@@ -120,13 +120,13 @@ export const Shop: React.FC<ShopProps> = ({ onProductClick, filteredMode = false
                 <button
                     key={cat}
                     onClick={() => setActiveFilters(prev => ({ ...prev, category: cat }))}
-                    className={`px-4 py-2 rounded-full text-xs font-bold transition-colors ${activeFilters.category === cat ? 'bg-white text-black' : 'bg-[#1A1F2C] text-[#A0AEC0]'}`}
+                    className={`px-4 py-2 rounded-full text-xs font-bold transition-colors ${activeFilters.category === cat ? 'bg-white text-black' : 'bg-[#111111] text-[#A0AEC0]'}`}
                 >
                     {cat}
                 </button>
             ))}
         </div>
-        <button onClick={() => setShowFilters(true)} className="p-2 bg-[#1A1F2C] rounded-full border border-white/10 text-white">
+        <button onClick={() => setShowFilters(true)} className="p-2 bg-[#111111] rounded-full border border-white/10 text-white">
             <Filter size={20} />
         </button>
       </div>
@@ -138,11 +138,11 @@ export const Shop: React.FC<ShopProps> = ({ onProductClick, filteredMode = false
                 className="group relative flex flex-col cursor-pointer"
                 onClick={() => onProductClick(shoe)}
             >
-                <div className="aspect-square rounded-[24px] bg-[#1A1F2C] overflow-hidden mb-3 relative border border-white/5">
-                    <img src={shoe.image} alt={shoe.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                <div className="aspect-square rounded-[24px] bg-[#111111] overflow-hidden mb-3 relative border border-white/5">
+                    <img src={shoe.image} alt={shoe.name} referrerPolicy="no-referrer" className="w-full h-full object-contain p-2 opacity-80 group-hover:opacity-100 transition-opacity" />
                     {shoe.isStaffPick && (
                         <div className="absolute top-2 left-2">
-                            <Badge color="bg-[#A3EBB1]">Staff Pick</Badge>
+                            <Badge color="bg-[#e43928]">Staff Pick</Badge>
                         </div>
                     )}
                     <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md rounded-full p-2 translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">

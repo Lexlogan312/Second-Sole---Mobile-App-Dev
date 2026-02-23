@@ -44,7 +44,7 @@ export const Community: React.FC<CommunityProps> = ({ initialItem }) => {
   const TrailModal = selectedTrail ? (
       <div className="fixed inset-0 z-[5000] flex items-end sm:items-center justify-center pointer-events-auto">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setSelectedTrail(null)} />
-          <div className="bg-[#1A1F2C] w-full max-w-md h-[80vh] rounded-t-[32px] sm:rounded-[32px] flex flex-col relative z-10 border border-white/10 overflow-hidden animate-in slide-in-from-bottom duration-300">
+          <div className="bg-[#111111] w-full max-w-md h-[80vh] rounded-t-[32px] sm:rounded-[32px] flex flex-col relative z-10 border border-white/10 overflow-hidden animate-in slide-in-from-bottom duration-300">
               <div className="h-40 bg-white/5 flex items-center justify-center relative flex-shrink-0">
                    <Map size={64} className="text-[#A0AEC0]" />
                    <button onClick={() => setSelectedTrail(null)} className="absolute top-4 right-4 bg-black/50 p-2 rounded-full text-white backdrop-blur-md hover:bg-black/70 transition-colors">
@@ -57,7 +57,7 @@ export const Community: React.FC<CommunityProps> = ({ initialItem }) => {
               <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
                   <div className="flex gap-2 mb-6">
                       <Badge color={selectedTrail.status === 'Open' ? 'bg-green-500/20 text-green-500' : selectedTrail.status === 'Muddy' ? 'bg-orange-500/20 text-orange-500' : 'bg-red-500/20 text-red-500'}>{selectedTrail.status}</Badge>
-                      <Badge color="bg-[#4A90E2]/20 text-[#4A90E2]">{selectedTrail.distance}</Badge>
+                      <Badge color="bg-[#e43928]/20 text-[#e43928]">{selectedTrail.distance}</Badge>
                   </div>
 
                   <div className="space-y-6">
@@ -66,7 +66,7 @@ export const Community: React.FC<CommunityProps> = ({ initialItem }) => {
                           <ul className="space-y-2">
                               {selectedTrail.highlights.map((h, i) => (
                                   <li key={i} className="flex items-start gap-2 text-sm text-white">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-[#A3EBB1] mt-1.5" />
+                                      <div className="w-1.5 h-1.5 rounded-full bg-white mt-1.5" />
                                       {h}
                                   </li>
                               ))}
@@ -90,7 +90,7 @@ export const Community: React.FC<CommunityProps> = ({ initialItem }) => {
   const EventModal = selectedEvent ? (
       <div className="fixed inset-0 z-[5000] flex items-end sm:items-center justify-center pointer-events-auto">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setSelectedEvent(null)} />
-          <div className="bg-[#1A1F2C] w-full max-w-md rounded-t-[32px] sm:rounded-[32px] relative z-10 border border-white/10 overflow-hidden animate-in slide-in-from-bottom duration-300">
+          <div className="bg-[#111111] w-full max-w-md rounded-t-[32px] sm:rounded-[32px] relative z-10 border border-white/10 overflow-hidden animate-in slide-in-from-bottom duration-300">
               <div className="p-6">
                   <div className="flex justify-between items-start mb-6">
                        <div>
@@ -144,7 +144,7 @@ export const Community: React.FC<CommunityProps> = ({ initialItem }) => {
                             <h3 className="text-lg font-bold">{trail.name}</h3>
                             <div className="flex gap-2">
                                 <Badge color={trail.status === 'Open' ? 'bg-green-500/20 text-green-500' : trail.status === 'Muddy' ? 'bg-orange-500/20 text-orange-500' : 'bg-red-500/20 text-red-500'}>{trail.status}</Badge>
-                                <Badge color="bg-[#1A1F2C] text-white border border-white/10">{trail.distance}</Badge>
+                                <Badge color="bg-[#111111] text-white border border-white/10">{trail.distance}</Badge>
                             </div>
                         </div>
                         <div className="text-sm text-[#A0AEC0] mb-3">{trail.surface}</div>
@@ -161,11 +161,11 @@ export const Community: React.FC<CommunityProps> = ({ initialItem }) => {
             {EVENTS.map(event => (
                  <Card 
                     key={event.id} 
-                    className="bg-gradient-to-r from-[#1A1F2C] to-[#252b3d] border-l-4 border-[#A3EBB1] cursor-pointer"
+                    className="bg-gradient-to-r from-[#111111] to-[#1a1a1a] border-l-4 border-[#e43928] cursor-pointer"
                     onClick={() => setSelectedEvent(event)}
                  >
                     <div className="flex items-center gap-3 mb-2">
-                        <Users className="text-[#A3EBB1]" />
+                        <Users className="text-[#e43928]" />
                         <h3 className="font-bold">{event.name}</h3>
                     </div>
                     <p className="text-sm text-[#A0AEC0] mb-4">

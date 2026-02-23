@@ -67,7 +67,7 @@ export const Cart: React.FC<CartProps> = ({ onBack }) => {
               <div className="flex items-center gap-4 mb-6">
                   <button 
                       onClick={() => setView('list')}
-                      className="w-10 h-10 rounded-full bg-[#1A1F2C] border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+                      className="w-10 h-10 rounded-full bg-[#111111] border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
                   >
                       <ArrowLeft size={20} />
                   </button>
@@ -77,14 +77,14 @@ export const Cart: React.FC<CartProps> = ({ onBack }) => {
               <div className="grid grid-cols-2 gap-3 mb-4">
                   <button 
                     onClick={() => setDeliveryMethod('pickup')}
-                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${deliveryMethod === 'pickup' ? 'bg-[#A3EBB1]/10 border-[#A3EBB1] text-[#A3EBB1]' : 'bg-[#1A1F2C] border-white/10 text-[#A0AEC0]'}`}
+                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${deliveryMethod === 'pickup' ? 'bg-white/10 border-white text-white' : 'bg-[#111111] border-white/10 text-[#A0AEC0]'}`}
                   >
                       <Store size={24} />
                       <span className="text-xs font-bold">Store Pickup</span>
                   </button>
                    <button 
                     onClick={() => setDeliveryMethod('delivery')}
-                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${deliveryMethod === 'delivery' ? 'bg-[#4A90E2]/10 border-[#4A90E2] text-[#4A90E2]' : 'bg-[#1A1F2C] border-white/10 text-[#A0AEC0]'}`}
+                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${deliveryMethod === 'delivery' ? 'bg-[#e43928]/10 border-[#e43928] text-[#e43928]' : 'bg-[#111111] border-white/10 text-[#A0AEC0]'}`}
                   >
                       <Truck size={24} />
                       <span className="text-xs font-bold">Local Delivery</span>
@@ -144,7 +144,7 @@ export const Cart: React.FC<CartProps> = ({ onBack }) => {
   if (cartItems.length === 0) {
       return (
           <div className="h-full flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 bg-[#1A1F2C] rounded-full flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-[#111111] rounded-full flex items-center justify-center mb-4">
                   <CreditCard className="text-[#A0AEC0]" />
               </div>
               <h2 className="text-xl font-bold mb-2">Cart is Empty</h2>
@@ -171,7 +171,7 @@ export const Cart: React.FC<CartProps> = ({ onBack }) => {
       <div className="flex items-center gap-4 mb-6">
           <button 
               onClick={onBack}
-              className="w-10 h-10 rounded-full bg-[#1A1F2C] border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+              className="w-10 h-10 rounded-full bg-[#111111] border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
           >
               <ArrowLeft size={20} />
           </button>
@@ -187,7 +187,7 @@ export const Cart: React.FC<CartProps> = ({ onBack }) => {
             if (!shoe) return null;
             return (
                 <Card key={`${item.shoeId}-${idx}`} className="flex gap-4 p-4">
-                    <img src={shoe.image} alt={shoe.name} className="w-20 h-20 rounded-xl object-cover bg-[#000]" />
+                    <img src={shoe.image} alt={shoe.name} referrerPolicy="no-referrer" className="w-20 h-20 rounded-xl object-contain p-2 bg-[#000]" />
                     <div className="flex-1 flex flex-col justify-between">
                         <div>
                             <h3 className="font-bold text-white">{shoe.name}</h3>

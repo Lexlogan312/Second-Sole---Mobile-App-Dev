@@ -92,7 +92,7 @@ export const Profile: React.FC = () => {
   const AddShoeModal = (
       <div className="fixed inset-0 z-[5000] flex items-end sm:items-center justify-center pointer-events-auto">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setAddingShoe(false)} />
-          <div className="bg-[#1A1F2C] w-full max-w-md rounded-t-[32px] sm:rounded-[32px] relative z-10 border border-white/10 p-6 animate-in slide-in-from-bottom duration-300">
+          <div className="bg-[#111111] w-full max-w-md rounded-t-[32px] sm:rounded-[32px] relative z-10 border border-white/10 p-6 animate-in slide-in-from-bottom duration-300">
               <div className="flex justify-between items-center mb-6">
                   <h3 className="font-bold text-xl text-white">Add to Rotation</h3>
                   <button onClick={() => setAddingShoe(false)}><X size={20} className="text-[#A0AEC0]" /></button>
@@ -102,7 +102,7 @@ export const Profile: React.FC = () => {
                   <div>
                       <label className="text-xs text-[#A0AEC0] uppercase font-bold mb-2 block">Select from Inventory</label>
                       <select 
-                          className="w-full bg-black border border-white/10 rounded-xl h-12 px-4 text-white focus:outline-none focus:border-[#4A90E2] appearance-none"
+                          className="w-full bg-black border border-white/10 rounded-xl h-12 px-4 text-white focus:outline-none focus:border-[#e43928] appearance-none"
                           value={selectedInventoryId}
                           onChange={(e) => {
                               setSelectedInventoryId(e.target.value);
@@ -121,7 +121,7 @@ export const Profile: React.FC = () => {
                           <div className="w-full border-t border-white/10"></div>
                       </div>
                       <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-[#1A1F2C] px-2 text-[#A0AEC0]">Or Custom Entry</span>
+                          <span className="bg-[#111111] px-2 text-[#A0AEC0]">Or Custom Entry</span>
                       </div>
                   </div>
 
@@ -144,7 +144,7 @@ export const Profile: React.FC = () => {
   const LogMilesModal = (
       <div className="fixed inset-0 z-[5000] flex items-end sm:items-center justify-center pointer-events-auto">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowLogModal(null)} />
-          <div className="bg-[#1A1F2C] w-full max-w-md rounded-t-[32px] sm:rounded-[32px] relative z-10 border border-white/10 p-6 animate-in slide-in-from-bottom duration-300">
+          <div className="bg-[#111111] w-full max-w-md rounded-t-[32px] sm:rounded-[32px] relative z-10 border border-white/10 p-6 animate-in slide-in-from-bottom duration-300">
               <div className="flex justify-between items-center mb-6">
                   <h3 className="font-bold text-xl text-white">Log Activity</h3>
                   <button onClick={() => setShowLogModal(null)}><X size={20} className="text-[#A0AEC0]" /></button>
@@ -197,12 +197,12 @@ export const Profile: React.FC = () => {
   return (
     <div className="space-y-8 pb-8">
       <div className="text-center py-6">
-        <div className="w-24 h-24 bg-gradient-to-br from-[#A3EBB1] to-[#4A90E2] rounded-full mx-auto mb-4 flex items-center justify-center shadow-[0_0_30px_rgba(74,144,226,0.3)]">
+        <div className="w-24 h-24 bg-gradient-to-br from-[#ffffff] to-[#e43928] rounded-full mx-auto mb-4 flex items-center justify-center shadow-[0_0_30px_rgba(228,57,40,0.3)]">
             <span className="text-3xl font-bold text-black">{profile.name.charAt(0)}</span>
         </div>
         <h2 className="text-2xl font-bold">{profile.name}</h2>
         <div className="flex justify-center gap-2 mt-2">
-             <Badge color="bg-[#1A1F2C] border border-white/10">{profile.attendanceCount} Runs Attended</Badge>
+             <Badge color="bg-[#111111] border border-white/10">{profile.attendanceCount} Runs Attended</Badge>
         </div>
       </div>
 
@@ -210,7 +210,7 @@ export const Profile: React.FC = () => {
       <div>
         <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-white tracking-tight">Sole Tracker</h2>
-            <button onClick={() => setAddingShoe(true)} className="text-[#4A90E2] text-sm font-medium flex items-center">
+            <button onClick={() => setAddingShoe(true)} className="text-[#e43928] text-sm font-medium flex items-center">
                 <Plus size={16} className="mr-1" /> Add Shoe
             </button>
         </div>
@@ -224,14 +224,14 @@ export const Profile: React.FC = () => {
             )}
             {rotation.map(shoe => {
                 const progress = Math.min((shoe.miles / shoe.threshold) * 100, 100);
-                const statusColor = progress > 90 ? '#ef4444' : progress > 70 ? '#f59e0b' : '#A3EBB1';
+                const statusColor = progress > 90 ? '#ef4444' : progress > 70 ? '#f59e0b' : '#e43928';
                 
                 return (
                     <Card key={shoe.id} className="p-4">
                         <div className="flex justify-between items-start mb-2">
                             <div className="flex gap-4">
                                 {shoe.image && (
-                                    <img src={shoe.image} alt="" className="w-12 h-12 rounded-lg object-cover bg-black" />
+                                    <img src={shoe.image} alt="" referrerPolicy="no-referrer" className="w-12 h-12 rounded-lg object-contain p-1 bg-black" />
                                 )}
                                 <div>
                                     <h3 className="font-bold text-lg">{shoe.name}</h3>
@@ -267,7 +267,7 @@ export const Profile: React.FC = () => {
                         </Button>
                         
                         {progress >= 100 && (
-                            <div className="mt-3 bg-[#A3EBB1]/10 p-2 rounded text-xs text-[#A3EBB1] flex items-center gap-2">
+                            <div className="mt-3 bg-[#e43928]/10 p-2 rounded text-xs text-[#e43928] flex items-center gap-2">
                                 <AlertCircle size={14} /> Discount Unlocked! Show in store.
                             </div>
                         )}
@@ -281,9 +281,9 @@ export const Profile: React.FC = () => {
       <div>
         <SectionHeader title="Data Audit" />
         <Card className="p-0 overflow-hidden">
-            <div className="p-4 border-b border-white/5 bg-[#252b3d]">
+            <div className="p-4 border-b border-white/5 bg-[#111111]">
                 <div className="flex items-center gap-2 text-sm font-bold">
-                    <Shield size={16} className="text-[#A3EBB1]" />
+                    <Shield size={16} className="text-[#e43928]" />
                     Local Privacy Vault
                 </div>
                 <p className="text-xs text-[#A0AEC0] mt-1">Data stays on this device. No cloud sync.</p>
