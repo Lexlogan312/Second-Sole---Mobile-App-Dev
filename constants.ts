@@ -5051,9 +5051,9 @@ export const TRAILS: Trail[] = [
     name: 'Austin Badger',
     distance: '3.5 - 5.0 miles',
     surface: 'Crushed Limestone / Singletrack',
-    description: 'Hilly and scenic, great for hill repeats.',
+    description: 'Hilly and scenic — one of the best trail running spots in Medina County. Great for hill repeats and building strength on technical terrain.',
     status: 'Open',
-    highlights: ['Scenic Overlooks', 'Technical Singletrack Sections', 'Bathroom Facilities'],
+    highlights: ['Scenic Overlooks', 'Technical Singletrack Sections', 'Bathroom Facilities', 'Dog Friendly'],
     parkingInfo: 'Large lot off River Styx Rd.',
     photo: 'https://www.visitmedinacounty.com/wp-content/uploads/2024/07/biking-trails-medina-county.jpg.webp'
   },
@@ -5062,10 +5062,10 @@ export const TRAILS: Trail[] = [
     name: 'Chippewa Rail Trail',
     distance: '10+ miles',
     surface: 'Paved',
-    description: 'Fast, flat out-and-back. Perfect for tempo runs.',
+    description: 'A fast, flat out-and-back perfect for tempo runs and long training days. One of the most popular paved routes in the county.',
     status: 'Open',
-    highlights: ['Mile Markers', 'Shaded Sections', 'Connects to Buckeye Woods'],
-    parkingInfo: 'Parking at various trailheads.',
+    highlights: ['Mile Markers', 'Shaded Sections', 'Connects to Buckeye Woods', 'Stroller Friendly'],
+    parkingInfo: 'Parking at various trailheads along the route.',
     photo: 'https://medinacountyparks.com/wp-content/uploads/2025/05/Chippewa-Rail-Trail-featured-image.jpg'
   },
   {
@@ -5073,11 +5073,55 @@ export const TRAILS: Trail[] = [
     name: 'Lake Medina',
     distance: '1.8 miles loop',
     surface: 'Mixed',
-    description: 'Scenic lake loop with steep elevation changes.',
+    description: 'A short but punchy lake loop with some steep elevation changes. Good option for a quick workout with a view.',
     status: 'Muddy',
     highlights: ['Lake Views', 'Steep Grades', 'Observation Deck'],
     parkingInfo: 'Lot off Route 18.',
     photo: 'https://cloudfront-us-east-1.images.arcpublishing.com/advancelocal/SJGP6FW4LVADVCHEOCD3EPJIOE.jpeg'
+  },
+  {
+    id: 'buckeye-woods',
+    name: 'Buckeye Woods',
+    distance: '2 - 4 miles',
+    surface: 'Natural / Dirt',
+    description: 'Wooded singletrack through old-growth forest. Shaded and soft underfoot — ideal for easy recovery runs or nature walks.',
+    status: 'Open',
+    highlights: ['Old-Growth Forest', 'Creek Crossings', 'Wildlife Sightings', 'Very Shaded'],
+    parkingInfo: 'Main lot on Buffham Rd, Medina.',
+    photo: 'https://medinacountyparks.com/wp-content/uploads/2025/05/Buckeye-Woods-1.jpg'
+  },
+  {
+    id: 'allardale',
+    name: 'Allardale Park',
+    distance: '1.5 - 3 miles',
+    surface: 'Paved / Gravel Mix',
+    description: 'A versatile community park with multiple loop options. Great for beginners or anyone wanting a relaxed run close to town.',
+    status: 'Open',
+    highlights: ['Multiple Loop Options', 'Restrooms Available', 'Picnic Areas', 'Well Lit'],
+    parkingInfo: 'Large parking lot at park entrance off Medina Rd.',
+    photo: 'https://medinacountyparks.com/wp-content/uploads/2025/05/The-Lodge-at-Allardale-featured-image.jpg'
+  },
+  {
+    id: 'plum-creek',
+    name: 'Plum Creek Greenway',
+    distance: '5 miles one-way',
+    surface: 'Paved',
+    description: 'A scenic greenway trail connecting Medina neighborhoods. Flat and smooth — great for easy miles and family runs.',
+    status: 'Open',
+    highlights: ['Creek Views', 'Connects to City Parks', 'Low Traffic', 'Flat Course'],
+    parkingInfo: 'Access from multiple city parks along the route.',
+    photo: 'https://medinacountyparks.com/wp-content/uploads/2025/06/PC-Greenway-hero.jpg'
+  },
+  {
+    id: 'hinckley-lake',
+    name: 'Hinckley Lake Loop',
+    distance: '3 miles loop',
+    surface: 'Paved / Gravel',
+    description: 'A beautiful loop around Hinckley Lake in Hinckley Reservation. Rolling terrain with lake views — a local favorite for group runs.',
+    status: 'Open',
+    highlights: ['Lake Views', 'Rolling Hills', 'Fishing Pier', 'Year-Round Access'],
+    parkingInfo: 'Large lot at Hinckley Lake off State Rd.',
+    photo: 'https://fox8.com/wp-content/uploads/sites/12/2023/03/Hinckley-Spillway_scenic_1-e1678982595419.jpg'
   }
 ];
 
@@ -5087,7 +5131,7 @@ export const EVENTS: Event[] = [
     name: 'Sole Train',
     day: 'Tue / Thu / Sat',
     time: '6:30 PM / 8:00 AM',
-    description: 'Community group run for all paces. Meet at the store.',
+    description: 'Community group run for all paces. Meet at the store. Our biggest weekly run — new runners always welcome.',
     paceGroups: ['Walk/Run', '10:00 - 11:00 min/mi', '9:00 - 9:45 min/mi', '8:00 - 8:45 min/mi', 'Sub 8:00']
   },
   {
@@ -5095,7 +5139,23 @@ export const EVENTS: Event[] = [
     name: 'Trail Heads',
     day: 'Monday',
     time: '6:30 PM',
-    description: 'Weekly trail exploration. Headlamps required in winter.',
+    description: 'Weekly trail exploration through local parks and singletrack. Headlamps required in winter months. No drop policy — we finish together.',
     paceGroups: ['No Drop', 'Adventure Pace']
+  },
+  {
+    id: 'long-run-sunday',
+    name: 'Sunday Long Run',
+    day: 'Sunday',
+    time: '7:30 AM',
+    description: 'The weekly long run. Meet at the store and head out for 8–14 miles through Medina neighborhoods and the Chippewa Rail Trail. Fueling stops provided.',
+    paceGroups: ['9:30 - 10:30 min/mi', '8:30 - 9:30 min/mi', '8:00 - 8:30 min/mi']
+  },
+  {
+    id: 'track-tuesday',
+    name: 'Speed Lab',
+    day: 'Wednesday',
+    time: '6:00 PM',
+    description: 'Structured speed workouts at the Medina High School track. Intervals, tempo, and drills led by a local coach. All levels welcome — workouts are scalable.',
+    paceGroups: ['Beginner Intervals', 'Intermediate', 'Advanced']
   }
 ];

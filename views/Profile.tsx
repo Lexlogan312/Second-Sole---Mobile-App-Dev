@@ -395,14 +395,14 @@ export const Profile: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 </div>
             </div>
 
-            {/* Data Audit */}
+            {/* Privacy & Data */}
             <div>
-                <SectionHeader title="Data Audit" />
+                <SectionHeader title="Privacy & Data" />
                 <Card className="p-0 overflow-hidden">
                     <div className={`p-4 border-b border-white/5 bg-[${THEME.surface}]`}>
                         <div className="flex items-center gap-2 text-sm font-bold">
                             <Shield size={16} className={`text-[${THEME.accent}]`} />
-                            Local Privacy Vault
+                            On-Device Storage
                         </div>
                         <p className={`text-xs text-[${THEME.muted}] mt-1`}>Data stays on this device. No cloud sync.</p>
                     </div>

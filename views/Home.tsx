@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Clock, Zap, Map } from 'lucide-react';
+import { MapPin, Clock, Footprints, Tag } from 'lucide-react';
 import { Card, Button, SectionHeader, Badge } from '../components/UI';
 import { storageService } from '../services/storage';
 import { EVENTS } from '../constants';
@@ -43,11 +43,11 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
       {/* Store Status Card */}
       <Card className="relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4">
-          <span className={`flex h-3 w-3 rounded-full ${isOpen ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : 'bg-red-500'}`}></span>
-        </div>
         <div className="mb-4">
-          <h3 className="text-xl font-bold mb-1">Second Sole Medina</h3>
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="text-xl font-bold">Second Sole Medina</h3>
+            <span className={`flex h-3 w-3 rounded-full ${isOpen ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : 'bg-red-500'}`}></span>
+          </div>
           <div className={`flex items-center text-[${THEME.muted}] text-sm gap-2`}>
             <MapPin size={14} />
             <span>122 Public Square, Medina, OH</span>
@@ -75,17 +75,17 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
           onClick={() => onNavigate('finder')}
           className={`bg-gradient-to-br from-[${THEME.surface}] to-[${THEME.surfaceAlt}] p-5 rounded-[24px] border border-white/5 cursor-pointer hover:border-[${THEME.accent}]/50 transition-colors group`}
         >
-          <Zap className={`text-[${THEME.accent}] mb-3 group-hover:scale-110 transition-transform`} />
-          <h3 className="font-bold text-lg leading-tight mb-1">Gait<br />Analysis</h3>
-          <p className={`text-xs text-[${THEME.muted}]`}>AI-Powered Quiz</p>
+          <Footprints className={`text-[${THEME.accent}] mb-3 group-hover:scale-110 transition-transform`} />
+          <h3 className="font-bold text-lg leading-tight mb-1">Shoe Finder</h3>
+          <p className={`text-xs text-[${THEME.muted}]`}>Find Your Perfect Pair</p>
         </div>
         <div
           onClick={() => onNavigate('shop')}
           className={`bg-gradient-to-br from-[${THEME.surface}] to-[${THEME.surfaceAlt}] p-5 rounded-[24px] border border-white/5 cursor-pointer hover:border-white/50 transition-colors group`}
         >
-          <div className="text-white mb-3 group-hover:scale-110 transition-transform font-bold text-xl">%</div>
-          <h3 className="font-bold text-lg leading-tight mb-1">Current<br />Stock</h3>
-          <p className={`text-xs text-[${THEME.muted}]`}>View Inventory</p>
+          <Tag className="text-white mb-3 group-hover:scale-110 transition-transform" />
+          <h3 className="font-bold text-lg leading-tight mb-1">Shop Now</h3>
+          <p className={`text-xs text-[${THEME.muted}]`}>Browse Current Deals</p>
         </div>
       </div>
 

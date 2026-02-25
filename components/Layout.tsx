@@ -14,7 +14,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
     { id: 'home', icon: Home, label: 'Home' },
     { id: 'finder', icon: Search, label: 'Finder' },
     { id: 'shop', icon: ShoppingBag, label: 'Shop' },
-    { id: 'community', icon: Map, label: 'Trails' },
+    { id: 'community', icon: Map, label: 'Explore' },
     { id: 'profile', icon: User, label: 'Profile' },
   ];
 

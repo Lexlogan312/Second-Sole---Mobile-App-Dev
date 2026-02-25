@@ -21,6 +21,7 @@ const STATUS_STYLES: Record<string, string> = {
 export const Community: React.FC<CommunityProps> = ({ initialItem, onItemConsumed }) => {
     const [selectedTrail, setSelectedTrail] = useState<Trail | null>(null);
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+    const [section, setSection] = useState<'terrain' | 'runs'>('terrain');
     // Initialize from persisted storage so switching tabs doesn't reset state
     const [rsvpedEvents, setRsvpedEvents] = useState<Set<string>>(
         () => new Set(storageService.getRsvpedEvents())
@@ -210,11 +211,31 @@ export const Community: React.FC<CommunityProps> = ({ initialItem, onItemConsume
 
     return (
         <>
-            <div className="space-y-8 pb-8">
+            <div className="space-y-4 pb-8">
+
+                {/* ── Segment Control ───────────────────────────────────── */}
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setSection('terrain')}
+                        className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${section === 'terrain'
+                            ? `bg-gradient-to-r from-[${THEME.text}] to-[${THEME.accent}] text-black`
+                            : `bg-[${THEME.surface}] text-[${THEME.muted}]`}`}
+                    >
+                        Local Terrain
+                    </button>
+                    <button
+                        onClick={() => setSection('runs')}
+                        className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${section === 'runs'
+                            ? `bg-gradient-to-r from-[${THEME.text}] to-[${THEME.accent}] text-black`
+                            : `bg-[${THEME.surface}] text-[${THEME.muted}]`}`}
+                    >
+                        Run Groups
+                    </button>
+                </div>
 
                 {/* ── Local Terrain ─────────────────────────────────────── */}
-                <div>
-                    <div className="mb-4">
+                {section === 'terrain' && <div>
+                    <div className="mb-2">
                         <h2 className="text-2xl font-bold text-white">Local Terrain</h2>
                         <p className={`text-sm text-[${THEME.muted}] mt-0.5`}>Curated routes by Medina staff</p>
                     </div>
@@ -267,11 +288,11 @@ export const Community: React.FC<CommunityProps> = ({ initialItem, onItemConsume
                             </div>
                         ))}
                     </div>
-                </div>
+                </div>}
 
                 {/* ── Run Groups ─────────────────────────────────────────── */}
-                <div>
-                    <div className="mb-4">
+                {section === 'runs' && <div>
+                    <div className="mb-2">
                         <h2 className="text-2xl font-bold text-white">Run Groups</h2>
                         <p className={`text-sm text-[${THEME.muted}] mt-0.5`}>All paces welcome — free to join</p>
                     </div>
@@ -323,7 +344,7 @@ export const Community: React.FC<CommunityProps> = ({ initialItem, onItemConsume
                             </div>
                         ))}
                     </div>
-                </div>
+                </div>}
             </div>
 
             {selectedTrail && createPortal(TrailModal, document.body)}
