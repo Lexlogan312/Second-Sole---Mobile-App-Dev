@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Settings, Trash2, Shield, Plus, Activity, AlertCircle, X, Check, Calendar } from 'lucide-react';
+import { Settings, Trash2, Shield, Plus, Activity, AlertCircle, X, Check, Calendar, LogOut } from 'lucide-react';
 import { Card, Button, SectionHeader, Input, Badge } from '../components/UI';
 import { storageService } from '../services/storage';
 import { ShoeRotationItem } from '../types';
 import { INVENTORY } from '../constants';
 import { THEME } from '../theme';
 
-export const Profile: React.FC = () => {
+export const Profile: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const [profile, setProfile] = useState(storageService.getProfile());
     const [rotation, setRotation] = useState(storageService.getRotation());
     const [privacyAudit] = useState(storageService.getPrivacyAudit());
@@ -27,7 +27,13 @@ export const Profile: React.FC = () => {
                 <Shield size={48} className={`text-[${THEME.muted}] mb-4`} />
                 <h2 className="text-xl font-bold mb-2">Guest Mode</h2>
                 <p className={`text-[${THEME.muted}] mb-6`}>Create a secure local profile to unlock the Sole Tracker, multi-shoe rotation, and discount rewards.</p>
-                <Button onClick={() => storageService.wipeData()}>Create Profile</Button>
+                <Button onClick={() => storageService.wipeData()} className="mb-3">Create Profile</Button>
+                <button
+                    onClick={onLogout}
+                    className={`flex items-center gap-2 text-sm text-[${THEME.muted}] hover:text-white transition-colors`}
+                >
+                    <LogOut size={14} /> Sign Out
+                </button>
             </div>
         );
     }
@@ -301,6 +307,7 @@ export const Profile: React.FC = () => {
                     <span className="text-3xl font-bold text-black">{profile.name.charAt(0)}</span>
                 </div>
                 <h2 className="text-2xl font-bold">{profile.name}</h2>
+                <p className={`text-sm text-[${THEME.muted}] mt-1`}>{profile.email}</p>
                 <div className="flex justify-center gap-2 mt-3">
                     <div className={`flex items-center gap-2 bg-[${THEME.accent}]/15 border border-[${THEME.accent}]/40 rounded-full px-4 py-1.5`}>
                         <Activity size={13} className={`text-[${THEME.accent}]`} />
@@ -308,6 +315,14 @@ export const Profile: React.FC = () => {
                         <span className="text-sm text-white/70 font-medium">Runs Attended</span>
                     </div>
                 </div>
+
+                {/* Logout */}
+                <button
+                    onClick={onLogout}
+                    className={`mt-5 flex items-center gap-2 text-sm text-[${THEME.muted}] hover:text-white transition-colors mx-auto`}
+                >
+                    <LogOut size={14} /> Log Out
+                </button>
             </div>
 
             {/* Rotation / Sole Tracker */}

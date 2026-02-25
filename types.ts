@@ -79,13 +79,19 @@ export interface PrivacyAudit {
   storageUsed: string;
 }
 
-export interface LocalStorageSchema {
+export interface Account {
   profile: UserProfile;
+  passwordHash: string;  // empty string for guest accounts
   gaitProfile: GaitProfile;
   rotation: ShoeRotationItem[];
   cart: CartItem[];
   rsvpedEvents: string[];
   privacyAudit: PrivacyAudit;
+}
+
+export interface LocalStorageSchema {
+  accounts: Record<string, Account>;
+  currentAccountId: string | null;
   isAuthenticated: boolean;
 }
 

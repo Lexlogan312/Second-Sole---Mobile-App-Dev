@@ -24,9 +24,6 @@ export default function App() {
   const [cartCount, setCartCount] = useState(storageService.getCart().length);
 
   useEffect(() => {
-    // Check auth on mount
-    setIsAuthenticated(storageService.isAuthenticated());
-
     // Simple interval to check cart updates
     const interval = setInterval(() => {
       const count = storageService.getCart().length;
@@ -34,6 +31,11 @@ export default function App() {
     }, 500);
     return () => clearInterval(interval);
   }, [cartCount]);
+
+  const handleLogout = () => {
+    storageService.logout();
+    setIsAuthenticated(false);
+  };
 
   const handleNavigate = (tab: string, params?: any) => {
     if (tab === 'shop') setShopFiltered(false);
@@ -60,7 +62,8 @@ export default function App() {
       case 'community':
         return <Community initialItem={communityParams} onItemConsumed={() => setCommunityParams(null)} />;
       case 'profile':
-        return <Profile />;
+        return <Profile onLogout={handleLogout} />;
+
       default:
         return <Home onNavigate={handleNavigate} />;
     }
