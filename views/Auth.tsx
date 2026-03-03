@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ScanFace, Fingerprint, Lock, ChevronRight, UserPlus, Eye, EyeOff, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button, Input } from '../components/UI';
 import { storageService } from '../services/storage';
@@ -8,6 +8,17 @@ import { THEME } from '../theme';
 
 interface AuthProps {
   onAuthenticated: () => void;
+  /**
+   * Increments every time App wants to (re)trigger authentication.
+   * 0 = startup / nothing triggered yet.
+   * >0 = trigger biometric prompt for accountId.
+   */
+  lockGeneration: number;
+  /**
+   * The account to authenticate. null means no real user account exists
+   * yet, so show the welcome/create screen instead.
+   */
+  accountId: string | null;
 }
 
 type AuthScreen = 'welcome' | 'add-account' | 'biometric-lock';
@@ -21,11 +32,13 @@ async function hashPassword(password: string): Promise<string> {
     .join('');
 }
 
-export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
-  const [screen, setScreen] = useState<AuthScreen>('welcome');
+export const Auth: React.FC<AuthProps> = ({ onAuthenticated, lockGeneration, accountId }) => {
+  const [screen, setScreen] = useState<AuthScreen>(() =>
+    accountId ? 'biometric-lock' : 'welcome'
+  );
   const [accounts, setAccounts] = useState(storageService.getAccounts());
 
-  // Inline form state (on the welcome screen)
+  // Inline form state
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,7 +47,6 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
   const [formError, setFormError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
-  // Show password fields once the user starts typing in name or email
   const showPasswordFields = name.trim().length > 0 || email.trim().length > 0;
 
   // Password fallback on lock screen
@@ -65,10 +77,32 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
     }
   }, [onAuthenticated]);
 
+  // ── Core lock trigger ────────────────────────────────────────────────────
+  // Fires whenever lockGeneration increments (i.e. every time App decides
+  // the user must re-authenticate). We skip generation 0 (startup default).
+  const prevGeneration = useRef(0);
   useEffect(() => {
-    if (screen === 'biometric-lock') triggerBiometric();
+    if (lockGeneration === 0) return;         // initial default — ignore
+    if (lockGeneration === prevGeneration.current) return; // already handled
+    prevGeneration.current = lockGeneration;
+
+    if (!accountId) return; // no real user — nothing to lock
+
+    // Switch to (or stay on) the correct account and reset lock-screen state.
+    storageService.switchAccount(accountId);
+    setShowPasswordFallback(false);
+    setPasswordInput('');
+    setPasswordError('');
+    setBiometricError('');
+    setScreen('biometric-lock');
+
+    // Fire the biometric prompt directly here — this works whether the screen
+    // was already 'biometric-lock' or just transitioned to it, because we're
+    // calling the function directly rather than watching the screen state.
+    triggerBiometric();
+    // triggerBiometric is stable (useCallback with no changing deps).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [screen]);
+  }, [lockGeneration, accountId]);
 
   const handleCreateAccount = async () => {
     setFormError('');
@@ -85,9 +119,10 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
     setIsCreating(false);
     setAccounts(storageService.getAccounts());
     setScreen('biometric-lock');
+    triggerBiometric();
   };
 
-  // ── Welcome / Account List ────────────────────────────────────────────────────
+  // ── Welcome / Account List ───────────────────────────────────────────────
   if (screen === 'welcome') {
     const namedAccounts = accounts.filter(a => !a.isGuest);
 
@@ -95,7 +130,6 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
       <div className={`min-h-screen bg-[${THEME.bg}] flex flex-col p-6 relative overflow-hidden`}>
         <div className={`absolute top-0 left-0 w-full h-72 bg-gradient-to-b from-[${THEME.surface}] to-transparent opacity-60 -z-10`} />
 
-        {/* Logo */}
         <div className="pt-16 pb-10">
           <h1 className="text-4xl font-bold text-white leading-tight">
             Second Sole<br />
@@ -108,7 +142,6 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
 
         <div className="flex-1 flex flex-col">
           {namedAccounts.length > 0 ? (
-            // ── Existing accounts list ──
             <>
               <p className={`text-xs font-semibold uppercase tracking-widest text-[${THEME.muted}] mb-4`}>
                 Your Accounts
@@ -120,6 +153,7 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
                     onClick={() => {
                       storageService.switchAccount(acc.id);
                       setScreen('biometric-lock');
+                      triggerBiometric();
                     }}
                     className={`w-full flex items-center gap-4 bg-[${THEME.surface}] border border-white/10 rounded-2xl p-4 text-left hover:border-[${THEME.accent}]/50 active:scale-[0.98] transition-all`}
                   >
@@ -135,7 +169,6 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
                 ))}
               </div>
 
-              {/* Add account row */}
               <button
                 onClick={() => { setName(''); setEmail(''); setPassword(''); setConfirm(''); setFormError(''); setScreen('add-account'); }}
                 className={`w-full flex items-center gap-4 border border-dashed border-white/15 rounded-2xl p-4 text-left hover:border-white/30 transition-colors mb-4`}
@@ -147,7 +180,6 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
               </button>
             </>
           ) : (
-            // ── No accounts — inline create form ──
             <>
               <div className="space-y-3 mb-4">
                 <Input
@@ -200,47 +232,32 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
                 {isCreating ? 'Creating...' : 'Create Account'}
                 <ChevronRight size={18} className="ml-auto" />
               </Button>
+              <p className={`text-xs text-center text-[${THEME.muted}]/40`}>
+                All data stored locally on device. No cloud transmission.
+              </p>
             </>
           )}
-        </div>
-
-        {/* Guest + legal */}
-        <div className="pb-8">
-          <button
-            onClick={() => { storageService.createGuestAccount(); onAuthenticated(); }}
-            className={`w-full text-center text-sm text-[${THEME.muted}] hover:text-white transition-colors py-3`}
-          >
-            Continue as Guest →
-          </button>
-          <p className={`text-xs text-center text-[${THEME.muted}]/40 mt-1`}>
-            All data stored locally on device. No cloud transmission.
-          </p>
         </div>
       </div>
     );
   }
 
-  // ── Add Account (separate screen) ─────────────────────────────────────────────
+  // ── Add Account Screen ───────────────────────────────────────────────────
   if (screen === 'add-account') {
     return (
       <div className={`min-h-screen bg-[${THEME.bg}] flex flex-col p-6 relative overflow-hidden`}>
         <div className={`absolute top-0 left-0 w-full h-72 bg-gradient-to-b from-[${THEME.surface}] to-transparent opacity-60 -z-10`} />
 
-        {/* Back */}
-        <div className="pt-14 pb-2">
-          <button
-            onClick={() => { setScreen('welcome'); setFormError(''); }}
-            className={`flex items-center gap-1 text-sm text-[${THEME.muted}] hover:text-white transition-colors`}
-          >
-            <ArrowLeft size={16} /> Back
-          </button>
-        </div>
+        <button
+          onClick={() => setScreen('welcome')}
+          className={`absolute top-14 left-6 flex items-center gap-1 text-sm text-[${THEME.muted}] hover:text-white transition-colors`}
+        >
+          <ArrowLeft size={16} /> Accounts
+        </button>
 
-        <div className="pt-8 pb-10">
-          <h1 className="text-4xl font-bold text-white leading-tight">
-            Add<br /><span className="gradient-text">Account</span>
-          </h1>
-          <p className={`text-sm text-[${THEME.muted}] mt-2`}>Stored securely on this device only.</p>
+        <div className="pt-24 pb-10">
+          <h1 className="text-3xl font-bold text-white">Add Account</h1>
+          <p className={`text-sm text-[${THEME.muted}] mt-2`}>Create a new local profile.</p>
         </div>
 
         <div className="flex-1 flex flex-col">
@@ -305,7 +322,7 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
     );
   }
 
-  // ── Biometric Lock Screen ─────────────────────────────────────────────────────
+  // ── Biometric Lock Screen ────────────────────────────────────────────────
   if (screen === 'biometric-lock') {
     const profile = storageService.getProfile();
     const biometryLabel = getBiometryLabel(biometryType);
@@ -313,10 +330,10 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
 
     const handlePasswordFallback = async () => {
       setPasswordError('');
-      const accountId = storageService.getCurrentAccountId();
-      if (!accountId) return;
+      const currentAccountId = storageService.getCurrentAccountId();
+      if (!currentAccountId) return;
       const hash = await hashPassword(passwordInput);
-      if (storageService.verifyPassword(accountId, hash)) {
+      if (storageService.verifyPassword(currentAccountId, hash)) {
         storageService.setAuthenticated(true);
         onAuthenticated();
       } else {
@@ -342,13 +359,12 @@ export const Auth: React.FC<AuthProps> = ({ onAuthenticated }) => {
 
         {!showPasswordFallback ? (
           <>
-            {/* Biometric ring */}
             <div className="mb-10 relative">
               <div
                 onClick={triggerBiometric}
                 className={`w-36 h-36 rounded-full border-2 flex items-center justify-center transition-all duration-700 cursor-pointer ${isScanning
-                  ? `border-[${THEME.accent}] shadow-[0_0_60px_rgba(228,57,40,0.45)]`
-                  : 'border-white/15 hover:border-white/30'
+                    ? `border-[${THEME.accent}] shadow-[0_0_60px_rgba(228,57,40,0.45)]`
+                    : 'border-white/15 hover:border-white/30'
                   }`}
               >
                 {isFaceId

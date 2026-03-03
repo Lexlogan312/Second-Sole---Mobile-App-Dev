@@ -27,15 +27,16 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
           <div className={`fixed bottom-[-20%] right-[-20%] w-[50%] h-[50%] bg-[${THEME.text}] rounded-full blur-[120px] opacity-10 pointer-events-none`} />
 
           {/* Main Content Area */}
-          <main className="flex-1 w-full relative z-10 px-5 h-full overflow-y-auto custom-scrollbar" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1.5rem)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 9rem)' }}>
+          <main className="flex-1 w-full relative z-10 h-full overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.18 }}
-                className=""
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.15, ease: 'easeInOut' }}
+                className="absolute inset-0 overflow-y-auto custom-scrollbar px-5"
+                style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1.5rem)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 9rem)' }}
               >
                 {children}
               </motion.div>

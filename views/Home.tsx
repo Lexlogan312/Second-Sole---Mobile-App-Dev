@@ -4,6 +4,7 @@ import { Card, Button, SectionHeader, Badge } from '../components/UI';
 import { storageService } from '../services/storage';
 import { EVENTS } from '../constants';
 import { THEME } from '../theme';
+import { Capacitor } from '@capacitor/core';
 
 interface HomeProps {
   onNavigate: (tab: string, params?: any) => void;
@@ -22,7 +23,12 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
   };
 
   const handleDirections = () => {
-    window.location.href = 'maps://?daddr=122+Public+Square,+Medina,+OH+44256';
+    const isIOS = Capacitor.getPlatform() === 'ios';
+    if (isIOS) {
+      window.location.href = 'maps://?daddr=122+Public+Square,+Medina,+OH+44256';
+    } else {
+      window.open('https://www.google.com/maps/dir/?api=1&destination=122+Public+Square,+Medina,+OH+44256', '_blank');
+    }
   };
 
   return (
@@ -36,7 +42,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         {!profile.isGuest && (
           <div className="text-right">
             <div className={`text-xs text-[${THEME.muted}] uppercase tracking-wider mb-1`}>Total Miles</div>
-            <div className={`text-[${THEME.accent}] font-mono font-bold text-xl`}>{totalMiles} mi</div>
+            <div className={`text-[${THEME.accent}] font-mono font-bold text-xl`}>{totalMiles.toFixed(1)} mi</div>
           </div>
         )}
       </div>

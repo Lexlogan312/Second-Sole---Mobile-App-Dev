@@ -155,6 +155,14 @@ export const storageService = {
     setSchema(schema);
   },
 
+  setNeedsReauth(value: boolean): void {
+    localStorage.setItem('needsReauth', value ? 'true' : 'false');
+  },
+
+  getNeedsReauth(): boolean {
+    return localStorage.getItem('needsReauth') === 'true';
+  },
+
   // ── Profile ─────────────────────────────────────────────────────────────────
 
   getProfile: (): UserProfile => {

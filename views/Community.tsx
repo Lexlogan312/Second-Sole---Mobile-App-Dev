@@ -6,6 +6,7 @@ import { TRAILS, EVENTS } from '../constants';
 import { Trail, Event } from '../types';
 import { storageService } from '../services/storage';
 import { THEME } from '../theme';
+import { Capacitor } from '@capacitor/core';
 
 interface CommunityProps {
     initialItem?: { type: 'trail' | 'event', id: string } | null;
@@ -57,7 +58,12 @@ export const Community: React.FC<CommunityProps> = ({ initialItem, onItemConsume
 
     const handleTrailDirections = (trail: Trail) => {
         const query = encodeURIComponent(`${trail.name} Medina, OH`);
-        window.location.href = `maps://?daddr=${query}`;
+        const isIOS = Capacitor.getPlatform() === 'ios';
+        if (isIOS) {
+            window.location.href = `maps://?daddr=${query}`;
+        } else {
+            window.open(`https://www.google.com/maps/dir/?api=1&destination=${query}`, '_blank');
+        }
     };
 
 
