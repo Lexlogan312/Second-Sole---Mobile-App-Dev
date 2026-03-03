@@ -16,7 +16,10 @@ import { THEME } from './theme';
 
 export default function App() {
   // Always start unauthenticated — every launch requires biometric/password.
+  // loggedOut = true when the user explicitly logged out; in that case Auth
+  // starts on the account-list screen rather than the biometric prompt.
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loggedOut, setLoggedOut] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [selectedProduct, setSelectedProduct] = useState<Shoe | null>(null);
   const [shopFiltered, setShopFiltered] = useState(false);
@@ -115,6 +118,8 @@ export default function App() {
   const handleLogout = () => {
     storageService.logout();
     setIsAuthenticated(false);
+    setLoggedOut(true);   // show account list, not biometric prompt
+    setLockGeneration(0); // suppress any pending lock trigger
   };
 
   const handleNavigate = (tab: string, params?: any) => {
@@ -128,11 +133,15 @@ export default function App() {
     const profile = storageService.getProfile();
     const isRealUser = !!(accountId && !profile?.isGuest);
 
+    // After an explicit logout pass null so Auth shows the account list;
+    // otherwise pass the real accountId so it goes straight to biometric.
+    const authAccountId = loggedOut ? null : (isRealUser ? accountId : null);
+
     return (
       <Auth
-        onAuthenticated={() => setIsAuthenticated(true)}
+        onAuthenticated={() => { setLoggedOut(false); setIsAuthenticated(true); }}
         lockGeneration={lockGeneration}
-        accountId={isRealUser ? accountId : null}
+        accountId={authAccountId}
       />
     );
   }
@@ -156,8 +165,8 @@ export default function App() {
       {/* Floating Cart Button */}
       <div
         className={`fixed bottom-32 right-5 z-40 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isShopActive
-            ? 'opacity-100 translate-y-0 pointer-events-auto scale-100'
-            : 'opacity-0 translate-y-10 pointer-events-none scale-90'
+          ? 'opacity-100 translate-y-0 pointer-events-auto scale-100'
+          : 'opacity-0 translate-y-10 pointer-events-none scale-90'
           }`}
       >
         <button
