@@ -11,6 +11,7 @@ import { Community } from './views/Community';
 import { Profile } from './views/Profile';
 import { ProductDetail } from './views/ProductDetail';
 import { storageService } from './services/storage';
+import { NotificationService } from './services/notifications';
 import { Shoe } from './types';
 import { THEME } from './theme';
 
@@ -115,6 +116,12 @@ export default function App() {
     return () => clearInterval(interval);
   }, [cartCount]);
 
+  // ── Capacitor Local Notifications Setup ──────────────────────────────────
+  useEffect(() => {
+    // Request permissions on launch
+    NotificationService.requestPermissions();
+  }, []);
+
   const handleLogout = () => {
     storageService.logout();
     setIsAuthenticated(false);
@@ -153,7 +160,7 @@ export default function App() {
       case 'shop': return <Shop filteredMode={shopFiltered} onProductClick={setSelectedProduct} />;
       case 'cart': return <Cart onBack={() => setActiveTab('shop')} />;
       case 'community': return <Community initialItem={communityParams} onItemConsumed={() => setCommunityParams(null)} />;
-      case 'profile': return <Profile onLogout={handleLogout} />;
+      case 'profile': return <Profile onLogout={handleLogout} onNavigate={handleNavigate} onProductClick={setSelectedProduct} />;
       default: return <Home onNavigate={handleNavigate} />;
     }
   };

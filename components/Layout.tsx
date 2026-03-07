@@ -36,7 +36,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.15, ease: 'easeInOut' }}
                 className="absolute inset-0 overflow-y-auto custom-scrollbar px-5"
-                style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1.5rem)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 9rem)' }}
+                style={{ paddingTop: 'calc(env(safe-area-inset-top) + 0.5rem)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 9rem)' }}
               >
                 {children}
               </motion.div>
@@ -44,7 +44,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
           </main>
 
           {/* Bottom Navigation */}
-          <nav className={`absolute bottom-0 left-0 right-0 z-50 px-4 pb-8 pt-4 bg-gradient-to-t from-[${THEME.bg}] via-black/90 to-transparent`}>
+          <nav className={`absolute bottom-0 left-0 right-0 z-50 px-4 pb-5 pt-4 bg-gradient-to-t from-[${THEME.bg}] via-black/90 to-transparent`}>
             <div className="glass-panel rounded-[32px] h-20 flex items-center justify-around px-2 shadow-2xl shadow-black/50">
               {navItems.map((item) => {
                 const isActive = activeTab === item.id;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, ChevronRight, AlertCircle, RotateCcw } from 'lucide-react';
+import { Check, ChevronRight, AlertCircle, RotateCcw, Sparkles, RefreshCw } from 'lucide-react';
 import { Button, Card } from '../components/UI';
 import { storageService } from '../services/storage';
 import { GaitProfile } from '../types';
@@ -140,10 +140,38 @@ const STEPS = [
   },
 ];
 
+// Build a human-readable profile summary from gait data
+function buildProfileSummary(gait: GaitProfile): string {
+  const parts: string[] = [];
+  if (gait.gender) parts.push(gait.gender === 'Unisex' ? 'unisex' : gait.gender === 'Men' ? "men's" : "women's");
+  if (gait.experienceLevel) {
+    const lvl = { Beginner: 'beginner', Intermediate: 'recreational', Advanced: 'competitive', Elite: 'elite' }[gait.experienceLevel] ?? gait.experienceLevel.toLowerCase();
+    parts.push(lvl);
+  }
+  if (gait.terrain) {
+    const t = { Road: 'road runner', Trail: 'trail runner', Track: 'track runner', Hybrid: 'mixed-terrain runner' }[gait.terrain] ?? 'runner';
+    parts.push(t);
+  }
+  if (gait.cushionPref) {
+    const c = { Firm: 'who prefers a firm ride', Balanced: 'who likes a balanced ride', Plush: 'who loves plush cushion' }[gait.cushionPref];
+    if (c) parts.push(c);
+  }
+  if (gait.distanceGoals) {
+    const d = { Speed: 'focused on speed & 5K/10K racing', Daily: 'focused on everyday training', Long: 'training for half/full marathons', Ultra: 'running ultra distances' }[gait.distanceGoals];
+    if (d) parts.push(d);
+  }
+  if (parts.length === 0) return 'A dedicated runner with saved preferences.';
+  const [first, ...rest] = parts;
+  return `You're a ${[first, ...rest].join(', ')}.`;
+}
+
 export const Finder: React.FC<FinderProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [retaking, setRetaking] = useState(false);
   const profile = storageService.getProfile();
+  const savedGait = storageService.getGaitProfile();
+  const hasCompletedQuiz = !!(savedGait.completedAt || savedGait.terrain);
 
   if (profile.isGuest) {
     return (
@@ -156,6 +184,68 @@ export const Finder: React.FC<FinderProps> = ({ onComplete }) => {
     );
   }
 
+  // ── Welcome Back Screen ──────────────────────────────────────────────────
+  if (hasCompletedQuiz && !retaking) {
+    const summary = buildProfileSummary(savedGait);
+    const profileChips = [
+      savedGait.terrain && { label: 'Terrain', val: savedGait.terrain },
+      savedGait.cushionPref && { label: 'Cushion', val: savedGait.cushionPref },
+      savedGait.pronation && { label: 'Pronation', val: savedGait.pronation },
+      savedGait.arch && { label: 'Arch', val: savedGait.arch },
+      savedGait.distanceGoals && { label: 'Goal', val: savedGait.distanceGoals },
+      savedGait.weeklyMiles && { label: 'Weekly Miles', val: savedGait.weeklyMiles },
+      savedGait.dropPref && { label: 'Drop', val: savedGait.dropPref },
+    ].filter(Boolean) as { label: string; val: string }[];
+
+    return (
+      <div className="flex flex-col gap-6 pb-8">
+        {/* Welcome banner */}
+        <div className="relative overflow-hidden rounded-[28px] p-6" style={{ background: `linear-gradient(135deg, ${THEME.accent}20, ${THEME.surface})`, border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-10" style={{ background: THEME.accent }} />
+          <div className="flex items-center gap-3 mb-3">
+            <div className={`w-10 h-10 bg-gradient-to-br from-[${THEME.text}] to-[${THEME.accent}] rounded-full flex items-center justify-center flex-shrink-0`}>
+              <Sparkles size={18} className="text-black" />
+            </div>
+            <div>
+              <p className={`text-[10px] font-bold text-[${THEME.accent}] uppercase tracking-wider`}>Your Running Profile</p>
+              <h2 className="text-xl font-black text-white">Welcome Back</h2>
+            </div>
+          </div>
+          <p className="text-sm text-white/70 leading-relaxed">{summary}</p>
+        </div>
+
+        {/* Profile chips */}
+        {profileChips.length > 0 && (
+          <div>
+            <p className={`text-xs font-bold text-[${THEME.muted}] uppercase tracking-wider mb-3`}>Your Biomechanics</p>
+            <div className="flex flex-wrap gap-2">
+              {profileChips.map(chip => (
+                <div key={chip.label} className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-3 py-1.5">
+                  <span className={`text-[10px] text-[${THEME.muted}] font-semibold`}>{chip.label}</span>
+                  <span className="text-white text-xs font-bold">{chip.val}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Match results CTA */}
+        <Button fullWidth size="lg" onClick={onComplete}>
+          <Sparkles size={18} className="mr-2" /> View My Shoe Matches
+        </Button>
+
+        {/* Retake */}
+        <button
+          onClick={() => { setRetaking(true); setCurrentStep(0); setAnswers({}); }}
+          className={`flex items-center justify-center gap-2 text-sm text-[${THEME.muted}] hover:text-white transition-colors`}
+        >
+          <RefreshCw size={14} /> Retake Quiz for New Recommendations
+        </button>
+      </div>
+    );
+  }
+
+  // ── Quiz Screen ──────────────────────────────────────────────────────────
   const handleSelect = (value: any, isMulti: boolean) => {
     const stepId = STEPS[currentStep].id;
     if (isMulti) {
@@ -180,13 +270,14 @@ export const Finder: React.FC<FinderProps> = ({ onComplete }) => {
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
-      storageService.updateGaitProfile(answers as GaitProfile);
+      storageService.updateGaitProfile({ ...answers as GaitProfile, completedAt: Date.now() });
       onComplete();
     }
   };
 
   const handleBack = () => {
     if (currentStep > 0) setCurrentStep(prev => prev - 1);
+    else if (retaking) { setRetaking(false); setCurrentStep(0); setAnswers({}); }
   };
 
   const stepData = STEPS[currentStep];
@@ -200,7 +291,7 @@ export const Finder: React.FC<FinderProps> = ({ onComplete }) => {
       {/* Progress header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-5">
-          {currentStep > 0 && (
+          {(currentStep > 0 || retaking) && (
             <button
               onClick={handleBack}
               className={`text-[${THEME.muted}] hover:text-white transition-colors flex-shrink-0`}
@@ -244,8 +335,8 @@ export const Finder: React.FC<FinderProps> = ({ onComplete }) => {
                 key={opt.value}
                 onClick={() => handleSelect(opt.value, !!(stepData as any).multi)}
                 className={`transition-all duration-200 ${isSelected
-                    ? `border-[${THEME.accent}] ring-1 ring-[${THEME.accent}] bg-[${THEME.surface}]`
-                    : 'border-transparent opacity-80 hover:opacity-100'
+                  ? `border-[${THEME.accent}] ring-1 ring-[${THEME.accent}] bg-[${THEME.surface}]`
+                  : 'border-transparent opacity-80 hover:opacity-100'
                   }`}
               >
                 <div className="flex items-center justify-between gap-3">

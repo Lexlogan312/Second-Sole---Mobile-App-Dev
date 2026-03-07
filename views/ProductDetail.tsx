@@ -4,6 +4,7 @@ import { X, ShoppingBag, Info, User } from 'lucide-react';
 import { Button, Badge } from '../components/UI';
 import { Shoe } from '../types';
 import { storageService } from '../services/storage';
+import { NotificationService } from '../services/notifications';
 import { THEME } from '../theme';
 
 interface ProductDetailProps {
@@ -18,6 +19,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ shoe, onClose }) =
     const handleAddToCart = () => {
         if (selectedSize) {
             storageService.addToCart({ shoeId: shoe.id, size: selectedSize, quantity: 1 });
+            NotificationService.scheduleCartReminder(); // <-- Schedule reminder
             onClose();
         }
     };

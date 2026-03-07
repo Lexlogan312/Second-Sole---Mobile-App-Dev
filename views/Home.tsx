@@ -16,7 +16,8 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
   const currentHour = new Date().getHours();
   const isOpen = currentHour >= 10 && currentHour < 19;
 
-  const totalMiles = rotation.reduce((sum, shoe) => sum + shoe.miles, 0);
+  const retired = storageService.getRetiredShoes();
+  const totalMiles = [...rotation, ...retired].reduce((sum, shoe) => sum + shoe.miles, 0);
 
   const handleCall = () => {
     window.location.href = 'tel:3307255918';

@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { MapPin, Users, X, Calendar, UserCheck, ChevronRight, Navigation, Info } from 'lucide-react';
-import { Badge, Button } from '../components/UI';
+import { Card, Badge, SectionHeader, Button } from '../components/UI';
 import { TRAILS, EVENTS } from '../constants';
 import { Trail, Event } from '../types';
 import { storageService } from '../services/storage';
+import { NotificationService } from '../services/notifications';
 import { THEME } from '../theme';
 import { Capacitor } from '@capacitor/core';
 
@@ -28,13 +29,17 @@ export const Community: React.FC<CommunityProps> = ({ initialItem, onItemConsume
         () => new Set(storageService.getRsvpedEvents())
     );
 
+    // Merge static data with any custom items added via Dev Menu
+    const allTrails = useMemo(() => [...TRAILS, ...storageService.getCustomTrails()], []);
+    const allEvents = useMemo(() => [...EVENTS, ...storageService.getCustomEvents()], []);
+
     useEffect(() => {
         if (initialItem) {
             if (initialItem.type === 'trail') {
-                const trail = TRAILS.find(t => t.id === initialItem.id);
+                const trail = allTrails.find(t => t.id === initialItem.id);
                 if (trail) setSelectedTrail(trail);
             } else if (initialItem.type === 'event') {
-                const event = EVENTS.find(e => e.id === initialItem.id);
+                const event = allEvents.find(e => e.id === initialItem.id);
                 if (event) setSelectedEvent(event);
             }
             // Clear from parent so tab re-visits don't re-open the modal
@@ -54,6 +59,11 @@ export const Community: React.FC<CommunityProps> = ({ initialItem, onItemConsume
     const handleRsvp = (eventId: string) => {
         storageService.rsvpEvent(eventId);
         setRsvpedEvents(prev => new Set([...prev, eventId]));
+
+        const event = allEvents.find(e => e.id === eventId);
+        if (event) {
+            NotificationService.scheduleEventReminder(event.name);
+        }
     };
 
     const handleTrailDirections = (trail: Trail) => {
@@ -219,24 +229,26 @@ export const Community: React.FC<CommunityProps> = ({ initialItem, onItemConsume
         <>
             <div className="space-y-4 pb-8">
 
-                {/* ── Segment Control ───────────────────────────────────── */}
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setSection('terrain')}
-                        className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${section === 'terrain'
-                            ? `bg-gradient-to-r from-[${THEME.text}] to-[${THEME.accent}] text-black`
-                            : `bg-[${THEME.surface}] text-[${THEME.muted}]`}`}
-                    >
-                        Local Terrain
-                    </button>
-                    <button
-                        onClick={() => setSection('runs')}
-                        className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${section === 'runs'
-                            ? `bg-gradient-to-r from-[${THEME.text}] to-[${THEME.accent}] text-black`
-                            : `bg-[${THEME.surface}] text-[${THEME.muted}]`}`}
-                    >
-                        Run Groups
-                    </button>
+                {/* ── Segment Control (Sticky) — pills only, no background ── */}
+                <div className="sticky top-0 z-20 pb-3 pt-1">
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setSection('terrain')}
+                            className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${section === 'terrain'
+                                ? `bg-gradient-to-r from-[${THEME.text}] to-[${THEME.accent}] text-black`
+                                : `bg-[${THEME.surface}] text-[${THEME.muted}]`}`}
+                        >
+                            Local Terrain
+                        </button>
+                        <button
+                            onClick={() => setSection('runs')}
+                            className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${section === 'runs'
+                                ? `bg-gradient-to-r from-[${THEME.text}] to-[${THEME.accent}] text-black`
+                                : `bg-[${THEME.surface}] text-[${THEME.muted}]`}`}
+                        >
+                            Run Groups
+                        </button>
+                    </div>
                 </div>
 
                 {/* ── Local Terrain ─────────────────────────────────────── */}
@@ -246,7 +258,7 @@ export const Community: React.FC<CommunityProps> = ({ initialItem, onItemConsume
                         <p className={`text-sm text-[${THEME.muted}] mt-0.5`}>Curated routes by Medina staff</p>
                     </div>
                     <div className="space-y-4">
-                        {TRAILS.map(trail => (
+                        {allTrails.map(trail => (
                             <div
                                 key={trail.id}
                                 className="group relative rounded-[24px] overflow-hidden cursor-pointer border border-white/10 active:scale-[0.98] transition-transform"
@@ -303,7 +315,7 @@ export const Community: React.FC<CommunityProps> = ({ initialItem, onItemConsume
                         <p className={`text-sm text-[${THEME.muted}] mt-0.5`}>All paces welcome — free to join</p>
                     </div>
                     <div className="space-y-3">
-                        {EVENTS.map(event => (
+                        {allEvents.map(event => (
                             <div
                                 key={event.id}
                                 className={`bg-[${THEME.surface}] border border-white/10 rounded-[20px] p-5 cursor-pointer active:scale-[0.98] transition-transform group`}

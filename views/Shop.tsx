@@ -50,8 +50,11 @@ export const Shop: React.FC<ShopProps> = ({ onProductClick, filteredMode = false
     });
     const profile = storageService.getProfile();
 
+    // Merge static inventory + any custom shoes added via Dev Menu
+    const FULL_INVENTORY = useMemo(() => [...INVENTORY, ...storageService.getCustomInventory()], []);
+
     const displayedInventory = useMemo(() => {
-        let filtered = INVENTORY;
+        let filtered = FULL_INVENTORY;
 
         // 1. My Matches — score-based pre-filter (composable with everything else)
         if (activeFilters.matchMode && !profile.isGuest) {
@@ -296,41 +299,43 @@ export const Shop: React.FC<ShopProps> = ({ onProductClick, filteredMode = false
     );
 
     return (
-        <div className="space-y-6 relative pb-4">
-            {/* Top bar — My Matches toggle + filter button */}
-            <div className="flex gap-2 items-center justify-between">
-                <div className="flex gap-2 flex-wrap">
-                    {!profile.isGuest && (
+        <div className="space-y-0 relative pb-4">
+            {/* Sticky Top bar — only the pills are visible, no background */}
+            <div className="sticky top-0 z-20 pb-3 pt-1">
+                <div className="flex gap-2 items-center justify-between">
+                    <div className="flex gap-2 flex-wrap">
+                        {!profile.isGuest && (
+                            <button
+                                onClick={() => setActiveFilters(prev => ({ ...prev, matchMode: !prev.matchMode }))}
+                                className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${activeFilters.matchMode
+                                    ? `bg-gradient-to-r from-[${THEME.text}] to-[${THEME.accent}] text-black`
+                                    : `bg-[${THEME.surface}] text-[${THEME.muted}]`}`}
+                            >
+                                My Matches
+                            </button>
+                        )}
+                        {/* Active category chip */}
+                        {activeFilters.category !== 'All' && (
+                            <span className={`flex items-center gap-1 text-xs bg-white/10 text-white px-3 py-1.5 rounded-full font-semibold`}>
+                                {activeFilters.category}
+                                <button onClick={() => setActiveFilters(prev => ({ ...prev, category: 'All' }))}><X size={11} /></button>
+                            </span>
+                        )}
+                    </div>
+                    <div className="relative flex-shrink-0">
                         <button
-                            onClick={() => setActiveFilters(prev => ({ ...prev, matchMode: !prev.matchMode }))}
-                            className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${activeFilters.matchMode
-                                ? `bg-gradient-to-r from-[${THEME.text}] to-[${THEME.accent}] text-black`
-                                : `bg-[${THEME.surface}] text-[${THEME.muted}]`}`}
+                            onClick={() => setShowFilters(true)}
+                            className={`flex items-center gap-2 px-4 py-2 bg-[${THEME.surface}] rounded-full border border-white/10 text-white text-sm font-semibold`}
                         >
-                            My Matches
+                            <Filter size={15} />
+                            Filters
                         </button>
-                    )}
-                    {/* Active category chip */}
-                    {activeFilters.category !== 'All' && (
-                        <span className={`flex items-center gap-1 text-xs bg-white/10 text-white px-3 py-1.5 rounded-full font-semibold`}>
-                            {activeFilters.category}
-                            <button onClick={() => setActiveFilters(prev => ({ ...prev, category: 'All' }))}><X size={11} /></button>
-                        </span>
-                    )}
-                </div>
-                <div className="relative flex-shrink-0">
-                    <button
-                        onClick={() => setShowFilters(true)}
-                        className={`flex items-center gap-2 px-4 py-2 bg-[${THEME.surface}] rounded-full border border-white/10 text-white text-sm font-semibold`}
-                    >
-                        <Filter size={15} />
-                        Filters
-                    </button>
-                    {activeFilterCount > 0 && (
-                        <span className={`absolute -top-1 -right-1 w-4 h-4 bg-[${THEME.accent}] rounded-full text-white text-[10px] font-bold flex items-center justify-center`}>
-                            {activeFilterCount}
-                        </span>
-                    )}
+                        {activeFilterCount > 0 && (
+                            <span className={`absolute -top-1 -right-1 w-4 h-4 bg-[${THEME.accent}] rounded-full text-white text-[10px] font-bold flex items-center justify-center`}>
+                                {activeFilterCount}
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
 

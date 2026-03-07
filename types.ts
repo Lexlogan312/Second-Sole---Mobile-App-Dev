@@ -18,6 +18,12 @@ export type Brand =
   | 'Salomon'
   | 'Skechers';
 
+// Shoe type used by the Sole Tracker for dynamic mileage limits
+export type ShoeType = 'Daily Trainer' | 'Racer' | 'Trail' | 'Racing Flat' | 'Other';
+
+// Terrain type used for run logging — extended beyond Road/Trail
+export type TerrainType = 'Road' | 'Trail' | 'Track' | 'Treadmill' | 'Mixed';
+
 export interface Shoe {
   id: string;
   name: string;
@@ -33,12 +39,15 @@ export interface Shoe {
   description: string;
   staffComparison?: string;
   gender: Gender;
+  tags?: string[];
+  staffTake?: string;
 }
 
 export interface CartItem {
   shoeId: string;
   quantity: number;
   size: number;
+  addedAt?: number; // timestamp for abandoned cart detection
 }
 
 export interface GaitProfile {
@@ -54,6 +63,16 @@ export interface GaitProfile {
   dropPref?: string;        // 'Zero' | 'Low' | 'Medium' | 'High'
   footShape?: string;       // 'Standard' | 'Wide'
   injuryHistory?: string[]; // 'None' | 'Plantar' | 'Shin' | 'Knee' | 'ITBand' | 'Hip' | 'Back' | 'Achilles'
+  completedAt?: number;     // timestamp of quiz completion
+}
+
+// Individual run logged against a tracked shoe
+export interface RunLog {
+  id: string;
+  date: string;        // ISO date string 'YYYY-MM-DD'
+  miles: number;
+  terrain: TerrainType;
+  notes?: string;
 }
 
 export interface ShoeRotationItem {
@@ -64,6 +83,36 @@ export interface ShoeRotationItem {
   miles: number;
   threshold: number;
   image?: string;
+  shoeType?: ShoeType;   // for dynamic mileage limits
+  runLogs?: RunLog[];    // individual run history
+  retiredAt?: string;    // ISO date — set when retired
+  isRetired?: boolean;
+}
+
+// Purchase history
+export interface OrderItem {
+  shoeId: string;
+  shoeName: string;
+  brand: string;
+  size: number;
+  price: number;
+  image: string;
+}
+
+export interface Order {
+  id: string;
+  date: string;           // ISO date string
+  fulfillmentType: 'Pickup' | 'Shipping';
+  items: OrderItem[];
+  total: number;
+}
+
+// Notification preferences
+export interface NotificationPrefs {
+  cartReminders: boolean;
+  mileageAlerts: boolean;
+  runLogCongrats: boolean;
+  eventReminders: boolean;
 }
 
 export interface UserProfile {
@@ -87,6 +136,13 @@ export interface Account {
   cart: CartItem[];
   rsvpedEvents: string[];
   privacyAudit: PrivacyAudit;
+  orders?: Order[];
+  notificationPrefs?: NotificationPrefs;
+  retiredShoes?: ShoeRotationItem[];
+  customInventory?: Shoe[];        // Dev-mode added shoes
+  customTrails?: Trail[];          // Dev-mode added trails
+  customEvents?: Event[];          // Dev-mode added events
+  devModeEnabled?: boolean;
 }
 
 export interface LocalStorageSchema {

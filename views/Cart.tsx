@@ -4,6 +4,8 @@ import { Trash2, CreditCard, QrCode, CheckCircle, Truck, Store, ArrowLeft } from
 import { Card, Button, Input, SectionHeader } from '../components/UI';
 import { storageService } from '../services/storage';
 import { INVENTORY } from '../constants';
+import { NotificationService } from '../services/notifications';
+import type { Order } from '../types';
 import { THEME } from '../theme';
 
 interface CartProps {
@@ -15,7 +17,8 @@ export const Cart: React.FC<CartProps> = ({ onBack }) => {
     const [view, setView] = useState<'list' | 'checkout' | 'success'>('list');
     const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'delivery'>('pickup');
 
-    const getShoe = (id: string) => INVENTORY.find(s => s.id === id);
+    const allInventory = [...INVENTORY, ...storageService.getCustomInventory()];
+    const getShoe = (id: string) => allInventory.find(s => s.id === id);
 
     const subtotal = cartItems.reduce((sum, item) => {
         const shoe = getShoe(item.shoeId);
@@ -26,10 +29,34 @@ export const Cart: React.FC<CartProps> = ({ onBack }) => {
 
     const handleRemove = (id: string, size: number) => {
         storageService.removeFromCart(id, size);
-        setCartItems(storageService.getCart());
+        const newCart = storageService.getCart();
+        setCartItems(newCart);
+        if (newCart.length === 0) {
+            NotificationService.cancelCartReminder();
+        }
     };
 
     const handleCheckout = () => {
+        const order: Order = {
+            id: `ORD-${Date.now()}`,
+            date: new Date().toISOString().split('T')[0],
+            fulfillmentType: deliveryMethod === 'pickup' ? 'Pickup' : 'Shipping',
+            items: cartItems.map(item => {
+                const shoe = getShoe(item.shoeId);
+                return {
+                    shoeId: item.shoeId,
+                    shoeName: shoe?.name ?? item.shoeId,
+                    brand: shoe?.brand ?? 'Unknown',
+                    size: item.size,
+                    price: shoe?.price ?? 0,
+                    image: shoe?.image ?? ''
+                };
+            }),
+            total: total
+        };
+        storageService.addOrder(order);
+        NotificationService.cancelCartReminder(); // Cancel reminder on checkout
+
         setTimeout(() => {
             storageService.clearCart();
             setCartItems([]);
@@ -103,19 +130,19 @@ export const Cart: React.FC<CartProps> = ({ onBack }) => {
                 ) : (
                     <div className="space-y-4">
                         <h3 className="font-bold text-white">Delivery Address</h3>
-                        <Input placeholder="Street Address" />
+                        <Input placeholder="Street Address" defaultValue="122 Public Square" />
                         <div className="grid grid-cols-2 gap-4">
                             <Input placeholder="City" defaultValue="Medina" />
-                            <Input placeholder="Zip" />
+                            <Input placeholder="Zip" defaultValue="44256" />
                         </div>
                     </div>
                 )}
 
                 <div className="space-y-4">
                     <h3 className="font-bold text-white">Payment Method</h3>
-                    <Input placeholder="Card Number" defaultValue="4242 4242 4242 4242" />
+                    <Input placeholder="Card Number" defaultValue="1234 5678 9012 3456" />
                     <div className="grid grid-cols-2 gap-4">
-                        <Input placeholder="MM/YY" defaultValue="12/25" />
+                        <Input placeholder="MM/YY" defaultValue="12/34" />
                         <Input placeholder="CVV" defaultValue="123" />
                     </div>
                 </div>

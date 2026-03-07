@@ -1,8 +1,15 @@
-import { UserProfile, CartItem, LocalStorageSchema, GaitProfile, ShoeRotationItem, Account } from '../types';
+import { UserProfile, CartItem, LocalStorageSchema, GaitProfile, ShoeRotationItem, Account, RunLog, Order, NotificationPrefs, Shoe, Trail, Event } from '../types';
 
 const STORAGE_KEY = 'second_sole_v2_data';
 
 // ─── Defaults ────────────────────────────────────────────────────────────────
+
+const defaultNotificationPrefs = (): NotificationPrefs => ({
+  cartReminders: true,
+  mileageAlerts: true,
+  runLogCongrats: true,
+  eventReminders: true,
+});
 
 const defaultAccount = (overrides?: Partial<UserProfile>): Account => ({
   profile: {
@@ -19,6 +26,13 @@ const defaultAccount = (overrides?: Partial<UserProfile>): Account => ({
   cart: [],
   rsvpedEvents: [],
   privacyAudit: { lastWipe: null, storageUsed: '0KB' },
+  orders: [],
+  notificationPrefs: defaultNotificationPrefs(),
+  retiredShoes: [],
+  customInventory: [],
+  customTrails: [],
+  customEvents: [],
+  devModeEnabled: false,
 });
 
 const getDefaultSchema = (): LocalStorageSchema => ({
@@ -63,6 +77,21 @@ const saveCurrentAccountData = (account: Account) => {
   schema.accounts[schema.currentAccountId] = account;
   setSchema(schema);
 };
+
+// ─── Account normalizer (ensure new fields exist on old accounts) ─────────────
+const normalizeAccount = (acc: Account): Account => ({
+  ...defaultAccount(),
+  ...acc,
+  profile: { ...defaultAccount().profile, ...acc.profile },
+  orders: acc.orders ?? [],
+  notificationPrefs: acc.notificationPrefs ?? defaultNotificationPrefs(),
+  retiredShoes: acc.retiredShoes ?? [],
+  customInventory: acc.customInventory ?? [],
+  customTrails: acc.customTrails ?? [],
+  customEvents: acc.customEvents ?? [],
+  devModeEnabled: acc.devModeEnabled ?? false,
+  rotation: (acc.rotation ?? []).map(r => ({ ...r, runLogs: r.runLogs ?? [] })),
+});
 
 // ─── Public service ───────────────────────────────────────────────────────────
 
@@ -185,26 +214,42 @@ export const storageService = {
   updateGaitProfile: (updates: Partial<GaitProfile>) => {
     const acc = getCurrentAccountData();
     if (!acc) return;
-    acc.gaitProfile = { ...acc.gaitProfile, ...updates };
+    acc.gaitProfile = { ...acc.gaitProfile, ...updates, completedAt: Date.now() };
+    saveCurrentAccountData(acc);
+  },
+
+  clearGaitProfile: () => {
+    const acc = getCurrentAccountData();
+    if (!acc) return;
+    acc.gaitProfile = {};
     saveCurrentAccountData(acc);
   },
 
   // ── Rotation ─────────────────────────────────────────────────────────────────
 
-  getRotation: (): ShoeRotationItem[] => getCurrentAccountData()?.rotation ?? [],
+  getRotation: (): ShoeRotationItem[] => {
+    const acc = getCurrentAccountData();
+    return (acc?.rotation ?? []).map(r => ({ ...r, runLogs: r.runLogs ?? [] }));
+  },
 
   addToRotation: (shoe: ShoeRotationItem) => {
     const acc = getCurrentAccountData();
     if (!acc) return;
-    acc.rotation.push(shoe);
+    acc.rotation.push({ ...shoe, runLogs: shoe.runLogs ?? [] });
     saveCurrentAccountData(acc);
   },
 
-  updateRotationShoe: (id: string, milesToAdd: number) => {
+  updateRotationShoe: (id: string, milesToAdd: number, runLog?: RunLog) => {
     const acc = getCurrentAccountData();
     if (!acc) return;
     const shoe = acc.rotation.find(s => s.id === id);
-    if (shoe) { shoe.miles += milesToAdd; saveCurrentAccountData(acc); }
+    if (shoe) {
+      shoe.miles += milesToAdd;
+      if (runLog) {
+        shoe.runLogs = [...(shoe.runLogs ?? []), runLog];
+      }
+      saveCurrentAccountData(acc);
+    }
   },
 
   removeRotationShoe: (id: string) => {
@@ -212,6 +257,23 @@ export const storageService = {
     if (!acc) return;
     acc.rotation = acc.rotation.filter(s => s.id !== id);
     saveCurrentAccountData(acc);
+  },
+
+  retireShoe: (id: string) => {
+    const acc = getCurrentAccountData();
+    if (!acc) return;
+    const shoe = acc.rotation.find(s => s.id === id);
+    if (shoe) {
+      const retiredShoe: ShoeRotationItem = { ...shoe, isRetired: true, retiredAt: new Date().toISOString().split('T')[0] };
+      acc.rotation = acc.rotation.filter(s => s.id !== id);
+      acc.retiredShoes = [...(acc.retiredShoes ?? []), retiredShoe];
+      saveCurrentAccountData(acc);
+    }
+  },
+
+  getRetiredShoes: (): ShoeRotationItem[] => {
+    const acc = getCurrentAccountData();
+    return normalizeAccount(acc ?? defaultAccount()).retiredShoes ?? [];
   },
 
   // ── Cart ─────────────────────────────────────────────────────────────────────
@@ -223,7 +285,7 @@ export const storageService = {
     if (!acc) return;
     const existingIndex = acc.cart.findIndex(i => i.shoeId === item.shoeId && i.size === item.size);
     if (existingIndex > -1) acc.cart[existingIndex].quantity += item.quantity;
-    else acc.cart.push(item);
+    else acc.cart.push({ ...item, addedAt: Date.now() });
     saveCurrentAccountData(acc);
   },
 
@@ -259,6 +321,87 @@ export const storageService = {
     const acc = getCurrentAccountData();
     if (!acc) return;
     acc.rsvpedEvents = (acc.rsvpedEvents ?? []).filter(id => id !== eventId);
+    saveCurrentAccountData(acc);
+  },
+
+  // ── Orders ─────────────────────────────────────────────────────────────────────
+
+  getOrders: (): Order[] => {
+    const acc = getCurrentAccountData();
+    return normalizeAccount(acc ?? defaultAccount()).orders ?? [];
+  },
+
+  addOrder: (order: Order) => {
+    const acc = getCurrentAccountData();
+    if (!acc) return;
+    acc.orders = [...(acc.orders ?? []), order];
+    saveCurrentAccountData(acc);
+  },
+
+
+  // ── Notification Preferences ─────────────────────────────────────────────────
+
+  getNotificationPrefs: (): NotificationPrefs => {
+    const acc = getCurrentAccountData();
+    return normalizeAccount(acc ?? defaultAccount()).notificationPrefs ?? defaultNotificationPrefs();
+  },
+
+  updateNotificationPrefs: (updates: Partial<NotificationPrefs>) => {
+    const acc = getCurrentAccountData();
+    if (!acc) return;
+    acc.notificationPrefs = { ...defaultNotificationPrefs(), ...(acc.notificationPrefs ?? {}), ...updates };
+    saveCurrentAccountData(acc);
+  },
+
+  // ── Custom Inventory (Dev Mode) ───────────────────────────────────────────────
+
+  getCustomInventory: (): Shoe[] => {
+    const acc = getCurrentAccountData();
+    return normalizeAccount(acc ?? defaultAccount()).customInventory ?? [];
+  },
+
+  addCustomShoe: (shoe: Shoe) => {
+    const acc = getCurrentAccountData();
+    if (!acc) return;
+    acc.customInventory = [...(acc.customInventory ?? []), shoe];
+    saveCurrentAccountData(acc);
+  },
+
+  getCustomTrails: (): Trail[] => {
+    const acc = getCurrentAccountData();
+    return normalizeAccount(acc ?? defaultAccount()).customTrails ?? [];
+  },
+
+  addCustomTrail: (trail: Trail) => {
+    const acc = getCurrentAccountData();
+    if (!acc) return;
+    acc.customTrails = [...(acc.customTrails ?? []), trail];
+    saveCurrentAccountData(acc);
+  },
+
+  getCustomEvents: (): Event[] => {
+    const acc = getCurrentAccountData();
+    return normalizeAccount(acc ?? defaultAccount()).customEvents ?? [];
+  },
+
+  addCustomEvent: (event: Event) => {
+    const acc = getCurrentAccountData();
+    if (!acc) return;
+    acc.customEvents = [...(acc.customEvents ?? []), event];
+    saveCurrentAccountData(acc);
+  },
+
+  // ── Dev Mode ──────────────────────────────────────────────────────────────────
+
+  isDevModeEnabled: (): boolean => {
+    const acc = getCurrentAccountData();
+    return acc?.devModeEnabled ?? false;
+  },
+
+  setDevMode: (enabled: boolean) => {
+    const acc = getCurrentAccountData();
+    if (!acc) return;
+    acc.devModeEnabled = enabled;
     saveCurrentAccountData(acc);
   },
 
